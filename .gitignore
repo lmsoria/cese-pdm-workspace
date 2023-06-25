@@ -4,6 +4,9 @@
 #metadata
 .metadata/
 *.pdom
+*.log
+*.pdom
+*.index
 
 #Debug
 Debug/
