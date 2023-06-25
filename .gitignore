@@ -1,3 +1,16 @@
+#settings
+.settings/
+
+#metadata
+.metadata/
+*.pdom
+
+#Debug
+Debug/
+debug/
+Release/
+release
+
 # Prerequisites
 *.d
 
@@ -12,17 +25,13 @@
 *.map
 *.exp
 
-# Precompiled Headers
-*.gch
-*.pch
-
 # Libraries
 *.lib
 *.a
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
+# Shared objects
 *.dll
 *.so
 *.so.*
@@ -35,26 +44,10 @@
 *.i*86
 *.x86_64
 *.hex
+*.bin
 
 # Debug files
 *.dSYM/
 *.su
 *.idb
 *.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# STM32CubeIDE related files
-.metadata/.log
-.metadata/.ide.log
-*.snap
-*.resources
-*.prefs
-.metadata/.plugins/org.eclipse.debug.ui/launchConfigurationHistory.xml
