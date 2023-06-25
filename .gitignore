@@ -54,3 +54,7 @@ dkms.conf
 # STM32CubeIDE related files
 .metadata/.log
 .metadata/.ide.log
+*.snap
+*.resources
+*.prefs
+.metadata/.plugins/org.eclipse.debug.ui/launchConfigurationHistory.xml
