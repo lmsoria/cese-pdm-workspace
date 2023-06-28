@@ -35,7 +35,7 @@ typedef struct
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SAMPLE_PERIOD 200
+#define TIMEOUT_PERIOD_MS 200
 #define LEDS_QTY 3
 /* USER CODE END PD */
 
@@ -114,7 +114,7 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  HAL_GPIO_TogglePin(sequence_leds[led_index].port, sequence_leds[led_index].pin);
-	  HAL_Delay(SAMPLE_PERIOD);
+	  HAL_Delay(TIMEOUT_PERIOD_MS);
 	  HAL_GPIO_TogglePin(sequence_leds[led_index].port, sequence_leds[led_index].pin);
 
 	  /// TODO handle me inside an interrupt
