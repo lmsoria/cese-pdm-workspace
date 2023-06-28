@@ -8,8 +8,10 @@
 *.pdom
 *.index
 *.ini
+*.cyclo
 
 #Debug
+**/Debug/
 Debug/
 debug/
 Release/
