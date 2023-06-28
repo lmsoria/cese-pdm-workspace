@@ -26,11 +26,21 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+
+/// Struct that represents a HAL LED
 typedef struct
 {
 	GPIO_TypeDef* port;
 	uint16_t pin;
 } LedStruct;
+
+/// Enum that represents order of sequence
+typedef enum
+{
+	ASCENDING = 1,
+	DESCENDING = LEDS_QTY - 1,
+} Direction;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -48,17 +58,14 @@ typedef struct
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
-LedStruct sequence_leds[LEDS_QTY] = {
+
+const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
+{
 		{LD1_GPIO_Port, LD1_Pin},
 		{LD2_GPIO_Port, LD2_Pin},
 		{LD3_GPIO_Port, LD3_Pin}
 };
 
-typedef enum
-{
-	ASCENDING = 1,
-	DESCENDING = LEDS_QTY - 1,
-} Direction;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -113,15 +120,16 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HAL_GPIO_TogglePin(sequence_leds[led_index].port, sequence_leds[led_index].pin);
+	  HAL_GPIO_TogglePin(SEQUENCE_LEDS[led_index].port, SEQUENCE_LEDS[led_index].pin);
 	  HAL_Delay(TIMEOUT_PERIOD_MS);
-	  HAL_GPIO_TogglePin(sequence_leds[led_index].port, sequence_leds[led_index].pin);
+	  HAL_GPIO_TogglePin(SEQUENCE_LEDS[led_index].port, SEQUENCE_LEDS[led_index].pin);
 
 	  /// TODO handle me inside an interrupt
 	  if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
 		  direction = (direction == ASCENDING ? DESCENDING : ASCENDING);
 	  }
 
+	  // wrap index between 0-LEDS_QTY
 	  led_index = ((led_index + direction) % LEDS_QTY);
     /* USER CODE BEGIN 3 */
   }
