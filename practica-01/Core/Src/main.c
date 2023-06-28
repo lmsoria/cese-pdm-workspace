@@ -117,7 +117,7 @@ int main(void)
 	  HAL_Delay(SAMPLE_PERIOD);
 	  HAL_GPIO_TogglePin(sequence_leds[led_index].port, sequence_leds[led_index].pin);
 
-
+	  /// TODO handle me inside an interrupt
 	  if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
 		  direction = (direction == ASCENDING ? DESCENDING : ASCENDING);
 	  }
