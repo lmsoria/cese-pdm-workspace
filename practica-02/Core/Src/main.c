@@ -27,10 +27,19 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+/// Struct that represents a HAL LED
+typedef struct
+{
+	GPIO_TypeDef* port;
+	uint16_t pin;
+} LedStruct;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define LEDS_QTY 3
 
 /* USER CODE END PD */
 
@@ -42,6 +51,13 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
+{
+	{LD1_GPIO_Port, LD1_Pin},
+	{LD2_GPIO_Port, LD2_Pin},
+	{LD3_GPIO_Port, LD3_Pin}
+};
 
 /* USER CODE END PV */
 
@@ -91,7 +107,11 @@ void delay_write(delay_t* delay, tick_t duration)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	delay_t delays[LEDS_QTY];
 
+	delay_init(&delays[0], 100);
+	delay_init(&delays[1], 500);
+	delay_init(&delays[2], 1000);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -121,6 +141,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
+	  for(uint8_t index = 0; index < LEDS_QTY; index++) {
+		 if(delay_read(&delays[index])) {
+			 HAL_GPIO_TogglePin(SEQUENCE_LEDS[index].port, SEQUENCE_LEDS[index].pin);
+		 }
+	  }
 
     /* USER CODE BEGIN 3 */
   }
