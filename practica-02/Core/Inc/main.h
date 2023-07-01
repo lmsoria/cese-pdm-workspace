@@ -65,9 +65,9 @@ void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN EFP */
 
-void delay_init(delay_t* delay, tick_t duration);
-bool_t delay_read(delay_t* delay);
-void delay_write(delay_t* delay, tick_t duration);
+void delay_init(delay_t* const delay, const tick_t duration);
+bool_t delay_read(delay_t* const delay);
+void delay_write(delay_t* const delay, const tick_t duration);
 
 /* USER CODE END EFP */
 

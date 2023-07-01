@@ -70,23 +70,23 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void delay_init(delay_t* delay, tick_t duration)
+void delay_init(delay_t* const delay, const tick_t duration)
 {
 	delay->start_time = (tick_t)HAL_GetTick();
 	delay->duration = duration;
 	delay->running = false;
 }
 
-bool_t delay_read(delay_t* delay)
+bool_t delay_read(delay_t* const delay)
 {
-	tick_t current_time = (tick_t)HAL_GetTick();
+	const tick_t CURRENT_TIME = (tick_t)HAL_GetTick();
 	bool_t ret = false;
 	if(!delay->running) {
-		delay->start_time = current_time;
+		delay->start_time = CURRENT_TIME;
 		delay->running = true;
 		return ret;
 	} else {
-		ret = (current_time - delay->start_time) >= delay->duration;
+		ret = (CURRENT_TIME - delay->start_time) >= delay->duration;
 		if(ret) {
 			delay->running = false;
 		}
@@ -94,7 +94,7 @@ bool_t delay_read(delay_t* delay)
 	}
 }
 
-void delay_write(delay_t* delay, tick_t duration)
+void delay_write(delay_t* const delay, const tick_t duration)
 {
 	delay->duration = duration;
 }
