@@ -54,7 +54,34 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void delay_init(delay_t* delay, tick_t duration)
+{
+	delay->start_time = (tick_t)HAL_GetTick();
+	delay->duration = duration;
+	delay->running = false;
+}
 
+bool_t delay_read(delay_t* delay)
+{
+	tick_t current_time = (tick_t)HAL_GetTick();
+	bool_t ret = false;
+	if(!delay->running) {
+		delay->start_time = current_time;
+		delay->running = true;
+		return ret;
+	} else {
+		ret = (current_time - delay->start_time) >= delay->duration;
+		if(ret) {
+			delay->running = false;
+		}
+		return ret;
+	}
+}
+
+void delay_write(delay_t* delay, tick_t duration)
+{
+	delay->duration = duration;
+}
 /* USER CODE END 0 */
 
 /**
