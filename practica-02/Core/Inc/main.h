@@ -31,11 +31,21 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
+#include <stdint.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+
+typedef uint32_t tick_t;
+typedef bool bool_t;
+
+typedef struct {
+	tick_t start_time;
+	tick_t duration;
+	bool_t running;
+} delay_t;
 
 /* USER CODE END ET */
 
@@ -54,6 +64,10 @@ void Error_Handler(void);
 void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN EFP */
+
+void delay_init(delay_t* delay, tick_t duration);
+bool_t delay_read(delay_t* delay);
+void delay_write(delay_t* delay, tick_t duration);
 
 /* USER CODE END EFP */
 
