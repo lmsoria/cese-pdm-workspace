@@ -59,6 +59,13 @@ const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
 	{LD3_GPIO_Port, LD3_Pin}
 };
 
+const tick_t DELAYS[LEDS_QTY] =
+{
+	100,
+	500,
+	1000
+};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -109,9 +116,9 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	delay_t delays[LEDS_QTY];
 
-	delay_init(&delays[0], 100);
-	delay_init(&delays[1], 500);
-	delay_init(&delays[2], 1000);
+	for(uint8_t index = 0; index < LEDS_QTY; index++) {
+		delay_init(&delays[index], DELAYS[index]);
+	}
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
