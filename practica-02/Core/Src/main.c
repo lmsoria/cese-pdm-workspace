@@ -19,38 +19,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+#define LEDS_QTY 3
 
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/// Struct that represents a HAL LED
 typedef struct
 {
 	GPIO_TypeDef* port;
 	uint16_t pin;
 } LedStruct;
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-#define LEDS_QTY 3
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
 
 const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
 {
@@ -66,17 +41,9 @@ const tick_t DELAYS[LEDS_QTY] =
 	1000
 };
 
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-/* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
 void delay_init(delay_t* const delay, const tick_t duration)
 {
 	delay->start_time = (tick_t)HAL_GetTick();
@@ -105,7 +72,6 @@ void delay_write(delay_t* const delay, const tick_t duration)
 {
 	delay->duration = duration;
 }
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -113,51 +79,23 @@ void delay_write(delay_t* const delay, const tick_t duration)
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
 	delay_t delays[LEDS_QTY];
 
 	for(uint8_t index = 0; index < LEDS_QTY; index++) {
 		delay_init(&delays[index], DELAYS[index]);
 	}
-  /* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	HAL_Init();
+	SystemClock_Config();
+	MX_GPIO_Init();
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
-
+	while (1) {
 	  for(uint8_t index = 0; index < LEDS_QTY; index++) {
 		 if(delay_read(&delays[index])) {
 			 HAL_GPIO_TogglePin(SEQUENCE_LEDS[index].port, SEQUENCE_LEDS[index].pin);
 		 }
 	  }
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+	}
 }
 
 /**
