@@ -58,14 +58,11 @@ bool_t delay_read(delay_t* const delay)
 	if(!delay->running) {
 		delay->start_time = CURRENT_TIME;
 		delay->running = true;
-		return ret;
 	} else {
 		ret = (CURRENT_TIME - delay->start_time) >= delay->duration;
-		if(ret) {
-			delay->running = false;
-		}
-		return ret;
+		delay->running = !ret;
 	}
+	return ret;
 }
 
 void delay_write(delay_t* const delay, const tick_t duration)

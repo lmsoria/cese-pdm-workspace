@@ -19,12 +19,43 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+#include "API_delay.h"
+
+#define TIMEOUT_PERIOD_MS 200
+#define LEDS_QTY 3
+
 UART_HandleTypeDef huart3;
+
+typedef struct
+{
+	GPIO_TypeDef* port;
+	uint16_t pin;
+} LedStruct;
+
+const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
+{
+	{LD1_GPIO_Port, LD1_Pin},
+	{LD2_GPIO_Port, LD2_Pin},
+	{LD3_GPIO_Port, LD3_Pin}
+};
+
+/// Enum that represents order of sequence
+typedef enum
+{
+	ASCENDING = 1,
+	DESCENDING = LEDS_QTY - 1,
+} Direction;
+
+const tick_t DELAYS[LEDS_QTY] =
+{
+	200,
+	200,
+	200
+};
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART3_UART_Init(void);
-
 
 /**
   * @brief  The application entry point.
@@ -32,20 +63,40 @@ static void MX_USART3_UART_Init(void);
   */
 int main(void)
 {
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	uint8_t led_index = 0;
+	Direction direction = ASCENDING;
+	delay_t delay;
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	delay_init(&delay, TIMEOUT_PERIOD_MS);
+	for(uint8_t index = 0; index < LEDS_QTY; index++) {
+		HAL_GPIO_WritePin(SEQUENCE_LEDS[index].port, SEQUENCE_LEDS[index].pin, GPIO_PIN_RESET);
+	}
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART3_UART_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  while (1)
-  {
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  }
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_USART3_UART_Init();
+
+	uint8_t cycle = 0;
+	while (1) {
+		if(delay_read(&delay)) {
+			HAL_GPIO_TogglePin(SEQUENCE_LEDS[led_index].port, SEQUENCE_LEDS[led_index].pin);
+			cycle++;
+		} if(cycle == 2) {
+			led_index = ((led_index + direction) % LEDS_QTY);
+			cycle = 0;
+		}
+
+		/// TODO handle me inside an interrupt
+		if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
+		  direction = (direction == ASCENDING ? DESCENDING : ASCENDING);
+		}
+	}
 }
 
 /**
