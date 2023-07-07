@@ -20,7 +20,6 @@ typedef struct {
 	bool_t running;
 } delay_t;
 
-
 void delay_init(delay_t* const delay, const tick_t duration);
 bool_t delay_read(delay_t* const delay);
 void delay_write(delay_t* const delay, const tick_t duration);
