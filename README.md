@@ -23,6 +23,17 @@ Este repositorio se trata de un workspace de STM32CubeIDE, asi que con clonar el
 ### Cargar el Firmware
 (TBD)
 
+## Proyectos disponibles
+* `Ej0_blinky`: Version del repo original. Hace titilar el LED1 de la placa
+* `Ej0_blinky_413ZH`: Version adaptada a la F413ZH.
+* `Ej1_pushButton`: Version del repo original. Hace titilar el LED1 de la placa cuando se aprieta el User Button.
+* `Ej1_pushButton_413ZH`: Version adaptada a la F413ZH.
+* `Ej2_uart`: Version del repo original.
+* `Ejercicio_delayNB_1`: Version del repo original.
+* `practica-01`: [Descripción del problema](https://docs.google.com/document/d/1caB5n22QeaETAT2AJ_aeaYWFDyMaYfSJhRpApwApLzw/edit). 
+* `practica-02`: [Descripción del problema](https://docs.google.com/document/d/173_tBdN7rIAfT5S-5lSsJWCGIJHKG1ay3VvMh4yfM58/edit). 
+* `practica-03`: [Descripción del problema](https://docs.google.com/document/d/1o45cu4Y6-IP3PXC4nwgnLuBHyxaYz1LkqilcBYN1GCU/edit). 
+
 ## Links de Referencia
 * [Programación de Microcontroladores - Sitio Oficial](https://sites.google.com/cursoscapse.com/pdm/material?authuser=0)
 * [DS11581 - STM32F413xH Datasheet](https://www.st.com/resource/en/datasheet/stm32f413zh.pdf)
