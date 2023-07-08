@@ -24,15 +24,16 @@
 #define TIMEOUT_PERIOD_MS 200
 #define LEDS_QTY 3
 
-UART_HandleTypeDef huart3;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
 typedef struct
 {
 	GPIO_TypeDef* port;
 	uint16_t pin;
-} LedStruct;
+} LEDStruct;
 
-const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
+const LEDStruct SEQUENCE_LEDS[LEDS_QTY] =
 {
 	{LD1_GPIO_Port, LD1_Pin},
 	{LD2_GPIO_Port, LD2_Pin},
@@ -42,20 +43,10 @@ const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
 /// Enum that represents order of sequence
 typedef enum
 {
-	ASCENDING = 1,
-	DESCENDING = LEDS_QTY - 1,
+	ASCENDING = 1, ///< iterate from 0 to LEDS_QTY
+	DESCENDING = LEDS_QTY - 1, ///< iterate from LEDS_QTY to 0
 } Direction;
 
-const tick_t DELAYS[LEDS_QTY] =
-{
-	200,
-	200,
-	200
-};
-
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_USART3_UART_Init(void);
 
 /**
   * @brief  The application entry point.
@@ -63,32 +54,29 @@ static void MX_USART3_UART_Init(void);
   */
 int main(void)
 {
+	delay_t delay;
 	uint8_t led_index = 0;
 	Direction direction = ASCENDING;
-	delay_t delay;
+	uint8_t cycle = 0;
 
+	// Initialize delay structure first, and clear leds just in case.
 	delay_init(&delay, TIMEOUT_PERIOD_MS);
 	for(uint8_t index = 0; index < LEDS_QTY; index++) {
 		HAL_GPIO_WritePin(SEQUENCE_LEDS[index].port, SEQUENCE_LEDS[index].pin, GPIO_PIN_RESET);
 	}
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
-
-	/* Configure the system clock */
 	SystemClock_Config();
-
-	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
-	MX_USART3_UART_Init();
 
-	uint8_t cycle = 0;
 	while (1) {
 		if(delay_read(&delay)) {
 			HAL_GPIO_TogglePin(SEQUENCE_LEDS[led_index].port, SEQUENCE_LEDS[led_index].pin);
 			cycle++;
-		} if(cycle == 2) {
-			led_index = ((led_index + direction) % LEDS_QTY);
+		}
+
+		if(cycle == 2) { // cycle == 2 implies that a LED has been toggled on and off, so we can jump to the next LED
+			led_index = ((led_index + direction) % LEDS_QTY); // Wrap led_index between [0-LEDS_QTY] for both ascending/descending directions
 			cycle = 0;
 		}
 
@@ -143,39 +131,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief USART3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART3_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART3_Init 0 */
-
-  /* USER CODE END USART3_Init 0 */
-
-  /* USER CODE BEGIN USART3_Init 1 */
-
-  /* USER CODE END USART3_Init 1 */
-  huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200;
-  huart3.Init.WordLength = UART_WORDLENGTH_8B;
-  huart3.Init.StopBits = UART_STOPBITS_1;
-  huart3.Init.Parity = UART_PARITY_NONE;
-  huart3.Init.Mode = UART_MODE_TX_RX;
-  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART3_Init 2 */
-
-  /* USER CODE END USART3_Init 2 */
-
 }
 
 /**
@@ -236,14 +191,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
 }
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
