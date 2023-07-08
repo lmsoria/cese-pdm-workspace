@@ -26,52 +26,42 @@
 extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include <stdbool.h>
 #include <stdint.h>
-/* USER CODE END Includes */
 
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
+#include "stm32f4xx_hal.h"
 
 typedef uint32_t tick_t;
 typedef bool bool_t;
 
+/// @brief struct representing a non-blocking delay.
 typedef struct {
-	tick_t start_time;
-	tick_t duration;
-	bool_t running;
+	tick_t start_time; ///< used to keep tracking of when the delay started
+	tick_t duration; ///< duration of the delay, in ms.
+	bool_t running; ///< flag to determine whether the delay is still nunning.
 } delay_t;
 
-/* USER CODE END ET */
+/// @brief Initializes a delay with the specified duration. This function DO NOT initializes the delay,
+/// in order to do that you'll need to call delay_read() after initializing the struct. 
+/// @param delay struct to be initialized
+/// @param duration in ms
+void delay_init(delay_t* const delay, const tick_t duration);
 
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
+/// @brief Queries whether the delay has reached its duration.
+/// If the timer is not running, it will start running it first.
+/// @param delay struct to be queried.
+/// @return true if the duration has been reached. false, otherwise.
+bool_t delay_read(delay_t* const delay);
 
-/* USER CODE END EC */
+/// @brief Change the duration of a delay
+/// @param delay struct to be written
+/// @param duration in ms
+void delay_write(delay_t* const delay, const tick_t duration);
 
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
 
-/* USER CODE END EM */
-
-/* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 void MX_USART3_UART_Init(void);
 
-/* USER CODE BEGIN EFP */
-
-void delay_init(delay_t* const delay, const tick_t duration);
-bool_t delay_read(delay_t* const delay);
-void delay_write(delay_t* const delay, const tick_t duration);
-
-/* USER CODE END EFP */
-
-/* Private defines -----------------------------------------------------------*/
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
 #define MCO_Pin GPIO_PIN_0
@@ -106,10 +96,6 @@ void delay_write(delay_t* const delay, const tick_t duration);
 #define SWO_GPIO_Port GPIOB
 #define LD2_Pin GPIO_PIN_7
 #define LD2_GPIO_Port GPIOB
-
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

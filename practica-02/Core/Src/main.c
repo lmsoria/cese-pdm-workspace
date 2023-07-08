@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -15,11 +14,13 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 
 #define LEDS_QTY 3
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
 typedef struct
 {
@@ -27,46 +28,57 @@ typedef struct
 	uint16_t pin;
 } LedStruct;
 
-const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
+static const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
 {
 	{LD1_GPIO_Port, LD1_Pin},
 	{LD2_GPIO_Port, LD2_Pin},
 	{LD3_GPIO_Port, LD3_Pin}
 };
 
-const tick_t DELAYS[LEDS_QTY] =
+static const tick_t DURATIONS_MS[LEDS_QTY] =
 {
 	100,
 	500,
 	1000
 };
 
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-
 void delay_init(delay_t* const delay, const tick_t duration)
 {
-	delay->start_time = (tick_t)HAL_GetTick();
+	if(!delay) {
+		Error_Handler();
+	}
+
+	delay->start_time = 0;
 	delay->duration = duration;
 	delay->running = false;
 }
 
 bool_t delay_read(delay_t* const delay)
 {
+	if(!delay) {
+		Error_Handler();
+	}
+
 	const tick_t CURRENT_TIME = (tick_t)HAL_GetTick();
 	bool_t ret = false;
+
 	if(!delay->running) {
 		delay->start_time = CURRENT_TIME;
 		delay->running = true;
 	} else {
 		ret = (CURRENT_TIME - delay->start_time) >= delay->duration;
-		delay->running = !ret;
+		delay->running = !ret; // stop running flag if we reached the duration.
 	}
+
 	return ret;
 }
 
 void delay_write(delay_t* const delay, const tick_t duration)
 {
+	if(!delay) {
+		Error_Handler();
+	}
+
 	delay->duration = duration;
 }
 
@@ -78,13 +90,14 @@ int main(void)
 {
 	delay_t delays[LEDS_QTY];
 
-	for(uint8_t index = 0; index < LEDS_QTY; index++) {
-		delay_init(&delays[index], DELAYS[index]);
-	}
-
 	HAL_Init();
 	SystemClock_Config();
 	MX_GPIO_Init();
+
+	// Initialize delay structures first, each one of then with their own duration
+	for(uint8_t index = 0; index < LEDS_QTY; index++) {
+		delay_init(&delays[index], DURATIONS_MS[index]);
+	}
 
 	while (1) {
 	  for(uint8_t index = 0; index < LEDS_QTY; index++) {
@@ -199,14 +212,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
 }
 
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
