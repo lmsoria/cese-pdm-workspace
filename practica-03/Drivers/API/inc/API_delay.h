@@ -8,9 +8,9 @@ typedef bool bool_t;
 
 /// @brief struct representing a non-blocking delay.
 typedef struct {
-	tick_t start_time; ///< used to keep tracking of when the delay started
-	tick_t duration; ///< duration of the delay, in ms.
-	bool_t running; ///< flag to determine whether the delay is still nunning.
+    tick_t start_time; ///< used to keep tracking of when the delay started
+    tick_t duration; ///< duration of the delay, in ms.
+    bool_t running; ///< flag to determine whether the delay is still nunning.
 } delay_t;
 
 /// @brief Initializes a delay with the specified duration. This function DO NOT initializes the delay,

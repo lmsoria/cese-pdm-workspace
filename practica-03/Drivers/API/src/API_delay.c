@@ -5,34 +5,34 @@
 
 void delay_init(delay_t* const delay, const tick_t duration)
 {
-	assert(delay);
+    assert(delay);
 
-	delay->start_time = (tick_t)HAL_GetTick();
-	delay->duration = duration;
-	delay->running = false;
+    delay->start_time = (tick_t)HAL_GetTick();
+    delay->duration = duration;
+    delay->running = false;
 }
 
 bool_t delay_read(delay_t* const delay)
 {
-	assert(delay);
+    assert(delay);
 
-	const tick_t CURRENT_TIME = (tick_t)HAL_GetTick();
-	bool_t ret = false;
+    const tick_t CURRENT_TIME = (tick_t)HAL_GetTick();
+    bool_t ret = false;
 
-	if(!delay->running) {
-		delay->start_time = CURRENT_TIME;
-		delay->running = true;
-	} else {
-		ret = (CURRENT_TIME - delay->start_time) >= delay->duration;
-		delay->running = !ret; // stop running flag if we reached the duration.
-	}
+    if(!delay->running) {
+        delay->start_time = CURRENT_TIME;
+        delay->running = true;
+    } else {
+        ret = (CURRENT_TIME - delay->start_time) >= delay->duration;
+        delay->running = !ret; // stop running flag if we reached the duration.
+    }
 
-	return ret;
+    return ret;
 }
 
 void delay_write(delay_t* const delay, const tick_t duration)
 {
-	assert(delay);
+    assert(delay);
 
-	delay->duration = duration;
+    delay->duration = duration;
 }
