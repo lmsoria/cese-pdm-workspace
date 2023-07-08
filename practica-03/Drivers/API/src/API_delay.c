@@ -1,12 +1,4 @@
-/*
- * API_delay.c
- *
- *  Created on: Jul 6, 2023
- *      Author: lsoria
- */
-
 #include <assert.h>
-
 #include "stm32f4xx_hal.h"
 
 #include "API_delay.h"
@@ -44,5 +36,3 @@ void delay_write(delay_t* const delay, const tick_t duration)
 
 	delay->duration = duration;
 }
-
-
