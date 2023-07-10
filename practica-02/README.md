@@ -60,3 +60,5 @@ const LedStruct SEQUENCE_LEDS[LEDS_QTY] =
     {LD3_GPIO_Port, LD3_Pin}
 };
 ```
+
+Por otra parte, en `void delay_init(delay_t* const delay, const tick_t duration)` no se realizó la validación del argumento `duration` pues se configuró el proyecto para que incluya las flags de compilación `-Wall` y `-Wextra`. Lo ideal sería agregar `-Werror` tambien para que la comparación entre enteros con y sin signo arroje un error, pero al hacer eso aparecieron otros warnings (y por ende errores) correspondientes a la librería HAL de ST.
