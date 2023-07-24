@@ -22,45 +22,60 @@
 #include "API_delay.h"
 
 #define DEBOUNCE_PERIOD_MS 40
-#define LEDS_QTY 3
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 
+/// @brief Toggle LED1 state
+static void button_pressed();
+
+/// @brief Toggle LED3 state
+static void button_released();
+
+/// Struct that represents a HAL LED
 typedef struct
 {
     GPIO_TypeDef* port;
     uint16_t pin;
 } LEDStruct;
 
-const LEDStruct SEQUENCE_LEDS[LEDS_QTY] =
-{
-    {LD1_GPIO_Port, LD1_Pin},
-    {LD2_GPIO_Port, LD2_Pin},
-    {LD3_GPIO_Port, LD3_Pin}
-};
-
-
+/// Enum that keeps track of the available LEDs
 typedef enum
 {
-    BUTTON_UP = 0,
-    BUTTON_FALLING,
-    BUTTON_DOWN,
-    BUTTON_RAISING,
+    LED1 = 0,  ///< Green LED
+    LED2,      ///< Blue LED
+    LED3,      ///< Red LED
+    LEDS_TOTAL /// Total amount of LEDs. Keep this value always at the bottom!
+} BoardLEDs;
+
+const LEDStruct AVAILABLE_LEDS[LEDS_TOTAL] =
+{
+    {LD1_GPIO_Port, LD1_Pin}, // LED1
+    {LD2_GPIO_Port, LD2_Pin}, // LED2
+    {LD3_GPIO_Port, LD3_Pin}, // LED3
+};
+
+/// Enum that represent a button possible state
+typedef enum
+{
+    BUTTON_UP = 0,  ///< Button released (default state)
+    BUTTON_FALLING, ///< Button going from released to pressed
+    BUTTON_DOWN,    ///< Button pressed
+    BUTTON_RAISING, ///< Button going from pressed to released
 } DebounceState;
-
-void button_pressed()
-{
-    HAL_GPIO_TogglePin(SEQUENCE_LEDS[0].port, SEQUENCE_LEDS[0].pin);
-}
-
-void button_released()
-{
-    HAL_GPIO_TogglePin(SEQUENCE_LEDS[2].port, SEQUENCE_LEDS[2].pin);
-}
 
 static delay_t debounce_delay;
 static DebounceState current_state;
+
+static void button_pressed()
+{
+    HAL_GPIO_TogglePin(AVAILABLE_LEDS[LED1].port, AVAILABLE_LEDS[LED1].pin);
+}
+
+static void button_released()
+{
+    HAL_GPIO_TogglePin(AVAILABLE_LEDS[LED3].port, AVAILABLE_LEDS[LED3].pin);
+}
 
 void debounce_fsm_init()
 {
