@@ -21,7 +21,7 @@
 
 #include "API_delay.h"
 
-#define TIMEOUT_PERIOD_MS 200
+#define DEBOUNCE_PERIOD_MS 40
 #define LEDS_QTY 3
 
 void SystemClock_Config(void);
@@ -40,12 +40,73 @@ const LEDStruct SEQUENCE_LEDS[LEDS_QTY] =
     {LD3_GPIO_Port, LD3_Pin}
 };
 
-/// Enum that represents order of sequence
+
 typedef enum
 {
-    ASCENDING = 1, ///< iterate from 0 to LEDS_QTY
-    DESCENDING = LEDS_QTY - 1, ///< iterate from LEDS_QTY to 0
-} Direction;
+    BUTTON_UP = 0,
+    BUTTON_FALLING,
+    BUTTON_DOWN,
+    BUTTON_RAISING,
+} DebounceState;
+
+void button_pressed()
+{
+    HAL_GPIO_TogglePin(SEQUENCE_LEDS[0].port, SEQUENCE_LEDS[0].pin);
+}
+
+void button_released()
+{
+    HAL_GPIO_TogglePin(SEQUENCE_LEDS[2].port, SEQUENCE_LEDS[2].pin);
+}
+
+static delay_t debounce_delay;
+static DebounceState current_state;
+
+void debounce_fsm_init()
+{
+    current_state = BUTTON_UP;
+    delay_init(&debounce_delay, DEBOUNCE_PERIOD_MS);
+}
+
+void debounce_fsm_update()
+{
+    switch(current_state)
+    {
+    case BUTTON_UP:
+        if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
+            current_state = BUTTON_FALLING;
+        }
+        break;
+    case BUTTON_FALLING:
+        if(delay_read(&debounce_delay)) {
+            if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
+                current_state = BUTTON_DOWN;
+                button_pressed();
+            } else {
+                current_state = BUTTON_UP;
+            }
+        }
+        break;
+    case BUTTON_DOWN:
+        if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) {
+            current_state = BUTTON_RAISING;
+        }
+        break;
+    case BUTTON_RAISING:
+        if(delay_read(&debounce_delay)) {
+            if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) {
+                current_state = BUTTON_UP;
+                button_released();
+            } else {
+                current_state = BUTTON_DOWN;
+            }
+        }
+        break;
+    default:
+        Error_Handler();
+        break;
+    }
+}
 
 
 /**
@@ -54,36 +115,14 @@ typedef enum
   */
 int main(void)
 {
-    delay_t delay;
-    uint8_t led_index = 0;
-    Direction direction = ASCENDING;
-    uint8_t cycle = 0;
-
-    // Initialize delay structure first, and clear leds just in case.
-    delay_init(&delay, TIMEOUT_PERIOD_MS);
-    for(uint8_t index = 0; index < LEDS_QTY; index++) {
-        HAL_GPIO_WritePin(SEQUENCE_LEDS[index].port, SEQUENCE_LEDS[index].pin, GPIO_PIN_RESET);
-    }
-
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
 
+    debounce_fsm_init();
+
     while (1) {
-        if(delay_read(&delay)) {
-            HAL_GPIO_TogglePin(SEQUENCE_LEDS[led_index].port, SEQUENCE_LEDS[led_index].pin);
-            cycle++;
-        }
-
-        if(cycle == 2) { // cycle == 2 implies that a LED has been toggled on and off, so we can jump to the next LED
-            led_index = ((led_index + direction) % LEDS_QTY); // Wrap led_index between [0-LEDS_QTY] for both ascending/descending directions
-            cycle = 0;
-        }
-
-        /// TODO handle me inside an interrupt
-        if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
-            direction = (direction == ASCENDING ? DESCENDING : ASCENDING);
-        }
+        debounce_fsm_update();
     }
 }
 
