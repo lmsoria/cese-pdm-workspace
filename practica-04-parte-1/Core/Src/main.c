@@ -48,7 +48,7 @@ typedef enum
     LEDS_TOTAL /// Total amount of LEDs. Keep this value always at the bottom!
 } BoardLEDs;
 
-const LEDStruct AVAILABLE_LEDS[LEDS_TOTAL] =
+static const LEDStruct AVAILABLE_LEDS[LEDS_TOTAL] =
 {
     {LD1_GPIO_Port, LD1_Pin}, // LED1
     {LD2_GPIO_Port, LD2_Pin}, // LED2
