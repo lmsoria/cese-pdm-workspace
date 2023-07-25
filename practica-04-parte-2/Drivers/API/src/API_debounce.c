@@ -15,7 +15,7 @@ typedef struct
     uint16_t pin;
 } ButtonStruct;
 
-const ButtonStruct USER_BUTTON = {.port = GPIOC, .pin = GPIO_PIN_13 };
+static const ButtonStruct USER_BUTTON = {.port = GPIOC, .pin = GPIO_PIN_13 };
 
 /// Enum that represent a button possible state
 typedef enum
