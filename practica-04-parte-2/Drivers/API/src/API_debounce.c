@@ -38,17 +38,19 @@ void debounce_fsm_init()
 
 void debounce_fsm_update()
 {
+    const GPIO_PinState BUTTON_STATE = HAL_GPIO_ReadPin(USER_BUTTON.port, USER_BUTTON.pin);
+
     switch(current_state)
     {
     case BUTTON_UP:
-        if(HAL_GPIO_ReadPin(USER_BUTTON.port, USER_BUTTON.pin) == GPIO_PIN_SET) {
+        if(BUTTON_STATE == GPIO_PIN_SET) {
             current_state = BUTTON_FALLING;
         }
         break;
     case BUTTON_FALLING:
         key_falling = true;
         if(delay_read(&debounce_delay)) {
-            if(HAL_GPIO_ReadPin(USER_BUTTON.port, USER_BUTTON.pin) == GPIO_PIN_SET) {
+            if(BUTTON_STATE == GPIO_PIN_SET) {
                 current_state = BUTTON_DOWN;
             } else {
                 current_state = BUTTON_UP;
@@ -56,13 +58,13 @@ void debounce_fsm_update()
         }
         break;
     case BUTTON_DOWN:
-        if(HAL_GPIO_ReadPin(USER_BUTTON.port, USER_BUTTON.pin) == GPIO_PIN_RESET) {
+        if(BUTTON_STATE == GPIO_PIN_RESET) {
             current_state = BUTTON_RAISING;
         }
         break;
     case BUTTON_RAISING:
         if(delay_read(&debounce_delay)) {
-            if(HAL_GPIO_ReadPin(USER_BUTTON.port, USER_BUTTON.pin) == GPIO_PIN_RESET) {
+            if(BUTTON_STATE == GPIO_PIN_RESET) {
                 current_state = BUTTON_UP;
             } else {
                 current_state = BUTTON_DOWN;
