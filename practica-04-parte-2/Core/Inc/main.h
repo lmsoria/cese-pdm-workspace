@@ -29,12 +29,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-/// @brief Initialize the user button anti-debouncing FSM
-void debounce_fsm_init();
-
-/// @brief Update the anti-debouncing FSM. This function must be called periodically.
-void debounce_fsm_update();
-
 void Error_Handler(void);
 
 

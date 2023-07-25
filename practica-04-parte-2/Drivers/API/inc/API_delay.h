@@ -1,10 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
-
-typedef uint32_t tick_t;
-typedef bool bool_t;
+#include "API_types.h"
 
 /// @brief struct representing a non-blocking delay.
 typedef struct {
@@ -23,7 +19,7 @@ void delay_init(delay_t* const delay, const tick_t duration);
 /// If the timer is not running, it will start running it first.
 /// @param delay struct to be queried.
 /// @return true if the duration has been reached. false, otherwise.
-bool_t delay_read(delay_t* const delay);
+const bool_t delay_read(delay_t* const delay);
 
 /// @brief Change the duration of a delay
 /// @param delay struct to be written

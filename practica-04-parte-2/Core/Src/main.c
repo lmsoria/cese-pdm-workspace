@@ -19,18 +19,15 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+#include "API_debounce.h"
 #include "API_delay.h"
-
-#define DEBOUNCE_PERIOD_MS 40
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 
-/// @brief Toggle LED1 state
-static void button_pressed();
-
-/// @brief Toggle LED3 state
-static void button_released();
+#define LED_PERIODS_QTY 2
+#define LED_PERIOD_1_MS 100
+#define LED_PERIOD_2_MS 500
 
 /// Struct that represents a HAL LED
 typedef struct
@@ -55,74 +52,11 @@ const LEDStruct AVAILABLE_LEDS[LEDS_TOTAL] =
     {LD3_GPIO_Port, LD3_Pin}, // LED3
 };
 
-/// Enum that represent a button possible state
-typedef enum
+const uint32_t AVAILABLE_PERIODS[LED_PERIODS_QTY] =
 {
-    BUTTON_UP = 0,  ///< Button released (default state)
-    BUTTON_FALLING, ///< Button going from released to pressed
-    BUTTON_DOWN,    ///< Button pressed
-    BUTTON_RAISING, ///< Button going from pressed to released
-} DebounceState;
-
-static delay_t debounce_delay;
-static DebounceState current_state;
-
-static void button_pressed()
-{
-    HAL_GPIO_TogglePin(AVAILABLE_LEDS[LED1].port, AVAILABLE_LEDS[LED1].pin);
-}
-
-static void button_released()
-{
-    HAL_GPIO_TogglePin(AVAILABLE_LEDS[LED3].port, AVAILABLE_LEDS[LED3].pin);
-}
-
-void debounce_fsm_init()
-{
-    current_state = BUTTON_UP;
-    delay_init(&debounce_delay, DEBOUNCE_PERIOD_MS);
-}
-
-void debounce_fsm_update()
-{
-    switch(current_state)
-    {
-    case BUTTON_UP:
-        if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
-            current_state = BUTTON_FALLING;
-        }
-        break;
-    case BUTTON_FALLING:
-        if(delay_read(&debounce_delay)) {
-            if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) {
-                current_state = BUTTON_DOWN;
-                button_pressed();
-            } else {
-                current_state = BUTTON_UP;
-            }
-        }
-        break;
-    case BUTTON_DOWN:
-        if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) {
-            current_state = BUTTON_RAISING;
-        }
-        break;
-    case BUTTON_RAISING:
-        if(delay_read(&debounce_delay)) {
-            if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) {
-                current_state = BUTTON_UP;
-                button_released();
-            } else {
-                current_state = BUTTON_DOWN;
-            }
-        }
-        break;
-    default:
-        Error_Handler();
-        break;
-    }
-}
-
+    LED_PERIOD_1_MS,
+    LED_PERIOD_2_MS
+};
 
 /**
   * @brief  The application entry point.
@@ -130,14 +64,29 @@ void debounce_fsm_update()
   */
 int main(void)
 {
+    delay_t delay = {};
+    uint8_t led_period_index = 0;
+
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
+
+    delay_init(&delay, AVAILABLE_PERIODS[led_period_index]);
 
     debounce_fsm_init();
 
     while (1) {
         debounce_fsm_update();
+
+        if(read_key()) {
+            led_period_index = (led_period_index + 1) % LED_PERIODS_QTY; // Wrap led_period_index between [0-LED_PERIODS_QTY]
+        }
+
+        delay_write(&delay, AVAILABLE_PERIODS[led_period_index]);
+
+        if(delay_read(&delay)) {
+            HAL_GPIO_TogglePin(AVAILABLE_LEDS[LED2].port, AVAILABLE_LEDS[LED2].pin);
+        }
     }
 }
 
