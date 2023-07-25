@@ -50,11 +50,7 @@ void debounce_fsm_update()
     case BUTTON_FALLING:
         key_falling = true;
         if(delay_read(&debounce_delay)) {
-            if(BUTTON_STATE == GPIO_PIN_SET) {
-                current_state = BUTTON_DOWN;
-            } else {
-                current_state = BUTTON_UP;
-            }
+            current_state = (BUTTON_STATE == GPIO_PIN_SET) ? BUTTON_DOWN : BUTTON_UP;
         }
         break;
     case BUTTON_DOWN:
@@ -64,11 +60,7 @@ void debounce_fsm_update()
         break;
     case BUTTON_RAISING:
         if(delay_read(&debounce_delay)) {
-            if(BUTTON_STATE == GPIO_PIN_RESET) {
-                current_state = BUTTON_UP;
-            } else {
-                current_state = BUTTON_DOWN;
-            }
+            current_state = (BUTTON_STATE == GPIO_PIN_RESET) ? BUTTON_UP : BUTTON_DOWN;
         }
         break;
     default:
