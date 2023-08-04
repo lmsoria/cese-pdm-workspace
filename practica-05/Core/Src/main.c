@@ -86,9 +86,6 @@ int main(void)
     delay_t delay = {};
     uint8_t led_period_index = 0;
 
-    /* MCU Configuration--------------------------------------------------------*/
-
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
