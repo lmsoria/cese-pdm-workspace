@@ -7,6 +7,15 @@
 
 #define DEBOUNCE_PERIOD_MS 40
 
+/// Enum that represent a button possible state
+typedef enum
+{
+    BUTTON_UP = 0,  ///< Button released (default state)
+    BUTTON_FALLING, ///< Button going from released to pressed
+    BUTTON_DOWN,    ///< Button pressed
+    BUTTON_RAISING, ///< Button going from pressed to released
+} DebounceState;
+
 /// Struct that represents a button
 /// TODO handle me in a separate file!
 typedef struct
@@ -20,18 +29,18 @@ static const ButtonStruct USER_BUTTON = {.port = GPIOC, .pin = GPIO_PIN_13 };
 static delay_t debounce_delay = {};
 static DebounceState current_state = BUTTON_UP;
 static bool_t key_falling = false;
-static button_callback_t cb = NULL;
+static button_handlers_t* fsm_handlers;
 
-void debounce_fsm_init(button_callback_t foo)
+void debounce_fsm_init(button_handlers_t* const handlers)
 {
-    cb = foo;
+    assert(handlers->pressed_cb && handlers->released_cb);
+    fsm_handlers = handlers;
     current_state = BUTTON_UP;
     delay_init(&debounce_delay, DEBOUNCE_PERIOD_MS);
 }
 
 void debounce_fsm_update()
 {
-    static bool_t callback_triggered = false;
     const GPIO_PinState BUTTON_STATE = HAL_GPIO_ReadPin(USER_BUTTON.port, USER_BUTTON.pin);
 
     switch(current_state)
@@ -45,7 +54,7 @@ void debounce_fsm_update()
         key_falling = true;
         if(delay_read(&debounce_delay)) {
             if(BUTTON_STATE == GPIO_PIN_SET) {
-                cb(current_state);
+                fsm_handlers->pressed_cb();
                 current_state = BUTTON_DOWN;
             } else {
                 current_state = BUTTON_UP;
@@ -60,7 +69,7 @@ void debounce_fsm_update()
     case BUTTON_RAISING:
         if(delay_read(&debounce_delay)) {
             if(BUTTON_STATE == GPIO_PIN_RESET) {
-                cb(current_state);
+                fsm_handlers->released_cb();
                 current_state = BUTTON_UP;
             } else {
                 current_state = BUTTON_DOWN;

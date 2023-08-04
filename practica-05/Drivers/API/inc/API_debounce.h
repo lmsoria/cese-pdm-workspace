@@ -3,20 +3,16 @@
 #include "API_debounce.h"
 #include "API_types.h"
 
+typedef void (*button_callback_t)(void);
 
-/// Enum that represent a button possible state
-typedef enum
+typedef struct
 {
-    BUTTON_UP = 0,  ///< Button released (default state)
-    BUTTON_FALLING, ///< Button going from released to pressed
-    BUTTON_DOWN,    ///< Button pressed
-    BUTTON_RAISING, ///< Button going from pressed to released
-} DebounceState;
-
-typedef void (*button_callback_t)(const DebounceState state);
+    button_callback_t pressed_cb;
+    button_callback_t released_cb;
+} button_handlers_t;
 
 /// @brief Initialize the user button anti-debouncing FSM
-void debounce_fsm_init(button_callback_t foo);
+void debounce_fsm_init(button_handlers_t* const handlers);
 
 /// @brief Update the anti-debouncing FSM. This function must be called periodically.
 void debounce_fsm_update();

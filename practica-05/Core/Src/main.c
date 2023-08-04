@@ -60,27 +60,21 @@ static const uint32_t AVAILABLE_PERIODS[LED_PERIODS_QTY] =
     LED_PERIOD_2_MS
 };
 
-void on_debounce_state_changed(const DebounceState state)
+static void button_pressed()
 {
-    switch(state)
-    {
-    case BUTTON_UP:
-        uart_send_string("BUTTON_UP\r\n");
-        break;
-    case BUTTON_FALLING:
-        uart_send_string("BUTTON_FALLING\r\n");
-        break;
-    case BUTTON_DOWN:
-        uart_send_string("BUTTON_DOWN\r\n");
-        break;
-    case BUTTON_RAISING:
-        uart_send_string("BUTTON_RAISING\r\n");
-        break;
-    default:
-        assert(false && "Invalid state");
-        break;
-    }
+    uart_send_string((uint8_t*)"BUTTON_FALLING\r\n");
 }
+
+static void button_released()
+{
+    uart_send_string((uint8_t*)"BUTTON_RAISING\r\n");
+}
+
+static button_handlers_t app_button_fsm_handlers =
+{
+        .pressed_cb = &button_pressed,
+        .released_cb = &button_released,
+};
 
 
 /**
@@ -104,10 +98,10 @@ int main(void)
         Error_Handler();
     }
 
-    uart_send_string("Application begins here:\r\n");
+    uart_send_string((uint8_t*)"Application begins here:\r\n");
 
     delay_init(&delay, AVAILABLE_PERIODS[led_period_index]);
-    debounce_fsm_init(&on_debounce_state_changed);
+    debounce_fsm_init(&app_button_fsm_handlers);
 
     while (1)
     {
