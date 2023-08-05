@@ -17,12 +17,12 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
-#include "i2c.h"
-#include "tim.h"
-#include "usart.h"
+#include <main.h>
 #include "usb_device.h"
-#include "gpio.h"
+#include "../../Drivers/HAL/inc/gpio.h"
+#include "../../Drivers/HAL/inc/i2c.h"
+#include "../../Drivers/HAL/inc/tim.h"
+#include "../../Drivers/HAL/inc/usart.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
