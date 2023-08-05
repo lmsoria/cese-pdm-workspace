@@ -18,7 +18,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "../../Drivers/HAL/inc/usart.h"
+#include "usart.h"
 
 /* USER CODE BEGIN 0 */
 

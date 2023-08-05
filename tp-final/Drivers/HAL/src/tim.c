@@ -18,7 +18,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "../../Drivers/HAL/inc/tim.h"
+#include "tim.h"
 
 /* USER CODE BEGIN 0 */
 

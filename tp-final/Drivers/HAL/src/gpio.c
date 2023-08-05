@@ -19,7 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "../../Drivers/HAL/inc/gpio.h"
+#include "gpio.h"
 
 /* USER CODE BEGIN 0 */
 
