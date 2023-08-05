@@ -20,7 +20,12 @@
 #include "i2c.h"
 #include "tim.h"
 
+#include "API_delay.h"
+#include "API_leds.h"
 #include "API_uart.h"
+
+#define HEARTBEAT_LED LED1
+#define HEARTBEAT_PERIOD_MS 1000
 
 void SystemClock_Config(void);
 
@@ -30,6 +35,9 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
+    delay_t heatbeat_delay = {};
+
+    delay_init(&heatbeat_delay, HEARTBEAT_PERIOD_MS);
 
   HAL_Init();
   SystemClock_Config();
@@ -45,6 +53,9 @@ int main(void)
 
   while (1)
   {
+      if(delay_read(&heatbeat_delay)) {
+          led_toggle(HEARTBEAT_LED);
+      }
 
   }
 }
