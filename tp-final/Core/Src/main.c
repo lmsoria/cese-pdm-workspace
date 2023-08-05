@@ -20,14 +20,35 @@
 #include "i2c.h"
 #include "tim.h"
 
+#include "API_debounce.h"
 #include "API_delay.h"
 #include "API_leds.h"
 #include "API_uart.h"
 
 #define HEARTBEAT_LED LED1
 #define HEARTBEAT_PERIOD_MS 1000
+#define SERVO_LED LED2
 
 void SystemClock_Config(void);
+
+
+/// @brief Callback pressed when the button is pressed.
+static void button_pressed()
+{
+    led_set(SERVO_LED);
+}
+
+/// @brief Callback pressed when the button is released.
+static void button_released()
+{
+    led_clear(SERVO_LED);
+}
+
+static button_handlers_t app_button_fsm_handlers =
+{
+    .pressed_cb = &button_pressed,
+    .released_cb = &button_released,
+};
 
 /**
   * @brief  The application entry point.
@@ -50,9 +71,12 @@ int main(void)
       Error_Handler();
   }
 
+ debounce_fsm_init(&app_button_fsm_handlers);
+
 
   while (1)
   {
+      debounce_fsm_update();
       if(delay_read(&heatbeat_delay)) {
           led_toggle(HEARTBEAT_LED);
       }

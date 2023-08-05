@@ -14,6 +14,7 @@ typedef struct
 static const ButtonStruct AVAILABLE_BUTTONS[BUTTONS_TOTAL] =
 {
     [USER_BUTTON] = {GPIOC, GPIO_PIN_13},
+    [SERVO_BUTTON] = {GPIOA, GPIO_PIN_3},
 };
 
 ButtonStatus button_read(const BoardButtons button)

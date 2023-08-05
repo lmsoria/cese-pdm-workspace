@@ -6,6 +6,7 @@
 typedef enum
 {
     USER_BUTTON = 0, ///< User Button (the blue one)
+    SERVO_BUTTON = 1, ///< Button added to the protoboard. Will control the servo mechanism.
     BUTTONS_TOTAL,   ///< Total amount of buttons. Keep this value always at the bottom!
 } BoardButtons;
 

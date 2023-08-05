@@ -29,7 +29,7 @@ void led_write(const BoardLEDs led, const LEDStatus status)
     assert(led < LEDS_TOTAL);
     assert(status == LED_ON || status == LED_OFF);
 
-    const GPIO_PinState STATE = (status == LED_ON) ? GPIO_PIN_SET : GPIO_PIN_SET;
+    const GPIO_PinState STATE = (status == LED_ON) ? GPIO_PIN_SET : GPIO_PIN_RESET;
     HAL_GPIO_WritePin(AVAILABLE_LEDS[led].port, AVAILABLE_LEDS[led].pin, STATE);
 }
 

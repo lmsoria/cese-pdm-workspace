@@ -32,7 +32,7 @@ void debounce_fsm_init(button_handlers_t* const handlers)
 
 void debounce_fsm_update()
 {
-    const ButtonStatus BUTTON_STATUS = button_read(USER_BUTTON);
+    const ButtonStatus BUTTON_STATUS = button_read(SERVO_BUTTON);
 
     switch(current_state)
     {
