@@ -22,6 +22,7 @@
 
 #include "API_debounce.h"
 #include "API_delay.h"
+#include "API_leds.h"
 #include "API_uart.h"
 
 void SystemClock_Config(void);
@@ -30,29 +31,6 @@ static void MX_GPIO_Init(void);
 #define LED_PERIODS_QTY 2
 #define LED_PERIOD_1_MS 100
 #define LED_PERIOD_2_MS 500
-
-/// Struct that represents a HAL LED
-typedef struct
-{
-    GPIO_TypeDef* port;
-    uint16_t pin;
-} LEDStruct;
-
-/// Enum that keeps track of the available LEDs
-typedef enum
-{
-    LED1 = 0,  ///< Green LED
-    LED2,      ///< Blue LED
-    LED3,      ///< Red LED
-    LEDS_TOTAL /// Total amount of LEDs. Keep this value always at the bottom!
-} BoardLEDs;
-
-static const LEDStruct AVAILABLE_LEDS[LEDS_TOTAL] =
-{
-    {LD1_GPIO_Port, LD1_Pin}, // LED1
-    {LD2_GPIO_Port, LD2_Pin}, // LED2
-    {LD3_GPIO_Port, LD3_Pin}, // LED3
-};
 
 static const uint32_t AVAILABLE_PERIODS[LED_PERIODS_QTY] =
 {
@@ -111,7 +89,7 @@ int main(void)
         delay_write(&delay, AVAILABLE_PERIODS[led_period_index]);
 
         if(delay_read(&delay)) {
-            HAL_GPIO_TogglePin(AVAILABLE_LEDS[LED2].port, AVAILABLE_LEDS[LED2].pin);
+            led_toggle(LED2);
         }
     }
 }
