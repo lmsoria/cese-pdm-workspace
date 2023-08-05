@@ -2,6 +2,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_gpio.h"
 
+#include "API_button.h"
 #include "API_debounce.h"
 #include "API_delay.h"
 
@@ -15,16 +16,6 @@ typedef enum
     BUTTON_DOWN,    ///< Button pressed
     BUTTON_RAISING, ///< Button going from pressed to released
 } DebounceState;
-
-/// Struct that represents a button
-/// TODO handle me in a separate file!
-typedef struct
-{
-    GPIO_TypeDef* port;
-    uint16_t pin;
-} ButtonStruct;
-
-static const ButtonStruct USER_BUTTON = {.port = GPIOC, .pin = GPIO_PIN_13 };
 
 static delay_t debounce_delay = {};
 static DebounceState current_state = BUTTON_UP;
@@ -41,19 +32,19 @@ void debounce_fsm_init(button_handlers_t* const handlers)
 
 void debounce_fsm_update()
 {
-    const GPIO_PinState BUTTON_STATE = HAL_GPIO_ReadPin(USER_BUTTON.port, USER_BUTTON.pin);
+    const ButtonStatus BUTTON_STATUS = button_read(USER_BUTTON);
 
     switch(current_state)
     {
     case BUTTON_UP:
-        if(BUTTON_STATE == GPIO_PIN_SET) {
+        if(BUTTON_STATUS == BUTTON_PRESSED) {
             current_state = BUTTON_FALLING;
         }
         break;
     case BUTTON_FALLING:
         key_falling = true;
         if(delay_read(&debounce_delay)) {
-            if(BUTTON_STATE == GPIO_PIN_SET) {
+            if(BUTTON_STATUS == BUTTON_PRESSED) {
                 fsm_handlers->pressed_cb();
                 current_state = BUTTON_DOWN;
             } else {
@@ -62,13 +53,13 @@ void debounce_fsm_update()
         }
         break;
     case BUTTON_DOWN:
-        if(BUTTON_STATE == GPIO_PIN_RESET) {
+        if(BUTTON_STATUS == BUTTON_RELEASED) {
             current_state = BUTTON_RAISING;
         }
         break;
     case BUTTON_RAISING:
         if(delay_read(&debounce_delay)) {
-            if(BUTTON_STATE == GPIO_PIN_RESET) {
+            if(BUTTON_STATUS == BUTTON_RELEASED) {
                 fsm_handlers->released_cb();
                 current_state = BUTTON_UP;
             } else {
