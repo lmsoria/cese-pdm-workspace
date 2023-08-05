@@ -17,69 +17,59 @@ typedef enum
     BUTTON_RAISING, ///< Button going from pressed to released
 } DebounceState;
 
-static delay_t debounce_delay = {};
-static DebounceState current_state = BUTTON_UP;
-static bool_t key_falling = false;
-static button_handlers_t* fsm_handlers;
+static delay_t debounce_delay[BUTTONS_TOTAL] = {};
+static DebounceState current_state[BUTTONS_TOTAL] = { BUTTON_UP };
+static button_handlers_t* fsm_handlers[BUTTONS_TOTAL] = { NULL } ;
 
-void debounce_fsm_init(button_handlers_t* const handlers)
+void debounce_fsm_init(const BoardButtons button, button_handlers_t* const handlers)
 {
     assert(handlers->pressed_cb && handlers->released_cb);
-    fsm_handlers = handlers;
-    current_state = BUTTON_UP;
-    delay_init(&debounce_delay, DEBOUNCE_PERIOD_MS);
+    fsm_handlers[button] = handlers;
+    current_state[button] = BUTTON_UP;
+    delay_init(&debounce_delay[button], DEBOUNCE_PERIOD_MS);
 }
 
 void debounce_fsm_update()
 {
-    const ButtonStatus BUTTON_STATUS = button_read(SERVO_BUTTON);
+    for(uint8_t button = 0; button < BUTTONS_TOTAL; button++) {
+        const ButtonStatus BUTTON_STATUS = button_read(button);
 
-    switch(current_state)
-    {
-    case BUTTON_UP:
-        if(BUTTON_STATUS == BUTTON_PRESSED) {
-            current_state = BUTTON_FALLING;
-        }
-        break;
-    case BUTTON_FALLING:
-        key_falling = true;
-        if(delay_read(&debounce_delay)) {
+        switch(current_state[button])
+        {
+        case BUTTON_UP:
             if(BUTTON_STATUS == BUTTON_PRESSED) {
-                if(fsm_handlers->pressed_cb) { fsm_handlers->pressed_cb(); }
-                current_state = BUTTON_DOWN;
-            } else {
-                current_state = BUTTON_UP;
+                current_state[button] = BUTTON_FALLING;
             }
-        }
-        break;
-    case BUTTON_DOWN:
-        if(BUTTON_STATUS == BUTTON_RELEASED) {
-            current_state = BUTTON_RAISING;
-        }
-        break;
-    case BUTTON_RAISING:
-        if(delay_read(&debounce_delay)) {
+            break;
+        case BUTTON_FALLING:
+            if(delay_read(&debounce_delay[button])) {
+                if(BUTTON_STATUS == BUTTON_PRESSED) {
+                    if(fsm_handlers[button]->pressed_cb) { fsm_handlers[button]->pressed_cb(); }
+                    current_state[button] = BUTTON_DOWN;
+                } else {
+                    current_state[button] = BUTTON_UP;
+                }
+            }
+            break;
+        case BUTTON_DOWN:
             if(BUTTON_STATUS == BUTTON_RELEASED) {
-                if(fsm_handlers->released_cb) { fsm_handlers->released_cb(); }
-                current_state = BUTTON_UP;
-            } else {
-                current_state = BUTTON_DOWN;
+                current_state[button] = BUTTON_RAISING;
             }
+            break;
+        case BUTTON_RAISING:
+            if(delay_read(&debounce_delay[button])) {
+                if(BUTTON_STATUS == BUTTON_RELEASED) {
+                    if(fsm_handlers[button]->released_cb) { fsm_handlers[button]->released_cb(); }
+                    current_state[button] = BUTTON_UP;
+                } else {
+                    current_state[button] = BUTTON_DOWN;
+                }
+            }
+            break;
+        default:
+            assert(false && "Invalid state");
+            break;
         }
-        break;
-    default:
-        assert(false && "Invalid state");
-        break;
-    }
-}
-
-const bool_t read_key()
-{
-    const bool_t RET = key_falling;
-
-    if(RET) {
-        key_falling = false;
     }
 
-    return RET;
 }

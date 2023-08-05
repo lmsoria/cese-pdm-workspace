@@ -33,21 +33,40 @@ void SystemClock_Config(void);
 
 
 /// @brief Callback pressed when the button is pressed.
-static void button_pressed()
+static void servo_button_pressed()
 {
     led_set(SERVO_LED);
 }
 
 /// @brief Callback pressed when the button is released.
-static void button_released()
+static void servo_button_released()
 {
     led_clear(SERVO_LED);
 }
 
-static button_handlers_t app_button_fsm_handlers =
+
+/// @brief Callback pressed when the button is pressed.
+static void streaming_button_pressed()
 {
-    .pressed_cb = &button_pressed,
-    .released_cb = &button_released,
+    led_set(LED3);
+}
+
+/// @brief Callback pressed when the button is released.
+static void streaming_button_released()
+{
+    led_clear(LED3);
+}
+
+static button_handlers_t servo_button_fsm_handlers =
+{
+    .pressed_cb = &servo_button_pressed,
+    .released_cb = &servo_button_released,
+};
+
+static button_handlers_t streaming_button_fsm_handlers =
+{
+    .pressed_cb = &streaming_button_pressed,
+    .released_cb = &streaming_button_released,
 };
 
 /**
@@ -71,7 +90,8 @@ int main(void)
       Error_Handler();
   }
 
- debounce_fsm_init(&app_button_fsm_handlers);
+ debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
+ debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
 
 
   while (1)
