@@ -38,16 +38,19 @@ static const uint32_t AVAILABLE_PERIODS[LED_PERIODS_QTY] =
     LED_PERIOD_2_MS
 };
 
+/// @brief Callback pressed when the button is pressed.
 static void button_pressed()
 {
     uart_send_string((uint8_t*)"BUTTON_FALLING\r\n");
 }
 
+/// @brief Callback pressed when the button is released.
 static void button_released()
 {
     uart_send_string((uint8_t*)"BUTTON_RAISING\r\n");
 }
 
+/// @brief Struct containing the handlers called by the debouncing FSM when the user button is pressed/released.
 static button_handlers_t app_button_fsm_handlers =
 {
         .pressed_cb = &button_pressed,

@@ -8,7 +8,7 @@
 
 #define DEBOUNCE_PERIOD_MS 40
 
-/// Enum that represent a button possible state
+/// @brief Enum that represent a button possible state
 typedef enum
 {
     BUTTON_UP = 0,  ///< Button released (default state)
@@ -45,7 +45,7 @@ void debounce_fsm_update()
         key_falling = true;
         if(delay_read(&debounce_delay)) {
             if(BUTTON_STATUS == BUTTON_PRESSED) {
-                fsm_handlers->pressed_cb();
+                if(fsm_handlers->pressed_cb) { fsm_handlers->pressed_cb(); }
                 current_state = BUTTON_DOWN;
             } else {
                 current_state = BUTTON_UP;
@@ -60,7 +60,7 @@ void debounce_fsm_update()
     case BUTTON_RAISING:
         if(delay_read(&debounce_delay)) {
             if(BUTTON_STATUS == BUTTON_RELEASED) {
-                fsm_handlers->released_cb();
+                if(fsm_handlers->released_cb) { fsm_handlers->released_cb(); }
                 current_state = BUTTON_UP;
             } else {
                 current_state = BUTTON_DOWN;
