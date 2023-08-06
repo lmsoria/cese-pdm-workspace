@@ -18,12 +18,12 @@
 #include "usb_device.h"
 #include "gpio.h"
 #include "i2c.h"
-#include "tim.h"
 
 #include "API_debounce.h"
 #include "API_delay.h"
 #include "API_leds.h"
 #include "API_uart.h"
+#include "API_pwm.h"
 
 #define HEARTBEAT_LED LED1
 #define HEARTBEAT_PERIOD_MS 1000
@@ -83,8 +83,10 @@ int main(void)
   SystemClock_Config();
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_TIM2_Init();
+//  MX_TIM2_Init();
   MX_USB_DEVICE_Init();
+
+  pwm_init();
 
   if(!uart_init()) {
       Error_Handler();
@@ -93,13 +95,30 @@ int main(void)
  debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
  debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
 
-
+ uint8_t index = 0;
   while (1)
   {
       debounce_fsm_update();
       if(delay_read(&heatbeat_delay)) {
           led_toggle(HEARTBEAT_LED);
       }
+
+      switch(index) {
+        case 0:
+            pwm_set_dc(250);
+            break;
+        case 1:
+            pwm_set_dc(650);
+            break;
+        case 2:
+            pwm_set_dc(1100);
+            break;
+        default:
+            break;
+        }
+
+       index = (index + 1) % 3;
+       HAL_Delay(2000);
 
   }
 }

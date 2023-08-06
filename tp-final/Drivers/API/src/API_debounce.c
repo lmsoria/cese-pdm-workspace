@@ -23,7 +23,7 @@ static button_handlers_t* fsm_handlers[BUTTONS_TOTAL] = { NULL } ;
 
 void debounce_fsm_init(const BoardButtons button, button_handlers_t* const handlers)
 {
-    assert(button > 0 && button < BUTTONS_TOTAL);
+    assert(button >= 0 && button < BUTTONS_TOTAL);
     assert(handlers);
 
     fsm_handlers[button] = handlers;
