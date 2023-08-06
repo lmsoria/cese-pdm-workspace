@@ -1,6 +1,6 @@
+#include <assert.h>
+
 #include "tim.h"
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_tim.h"
 
 #include "API_pwm.h"
 
@@ -13,8 +13,9 @@ void pwm_init()
     HAL_TIM_PWM_Start(&timer_handle, TIM_CHANNEL_1);
 }
 
-// TODO: actually, we are not passing the duty cycle. Adapt this code to be a float number between [0.0f - 100.0f] and determine the actual CCR1 value
-void pwm_set_dc(const uint16_t duty_cycle)
+void pwm_set_dc(const float duty_cycle)
 {
-    timer_handle.Instance->CCR1 = duty_cycle;
+    assert(duty_cycle >= 0.0f && duty_cycle <= 100.0f);
+    uint32_t ccr1_value = (uint32_t)(duty_cycle * 100);
+    timer_handle.Instance->CCR1 = ccr1_value;
 }

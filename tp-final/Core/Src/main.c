@@ -83,7 +83,6 @@ int main(void)
   SystemClock_Config();
   MX_GPIO_Init();
   MX_I2C1_Init();
-//  MX_TIM2_Init();
   MX_USB_DEVICE_Init();
 
   pwm_init();
@@ -105,13 +104,13 @@ int main(void)
 
       switch(index) {
         case 0:
-            pwm_set_dc(250);
+            pwm_set_dc(2.5f);
             break;
         case 1:
-            pwm_set_dc(650);
+            pwm_set_dc(6.5f);
             break;
         case 2:
-            pwm_set_dc(1100);
+            pwm_set_dc(11.0f);
             break;
         default:
             break;
