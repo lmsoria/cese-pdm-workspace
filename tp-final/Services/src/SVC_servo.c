@@ -28,7 +28,7 @@ void svc_servo_init()
 {
     pwm_init();
     current_state = SERVO_IDLE;
-    pwm_set_dc(SERVO_IDLE_DC);
+    pwm_set_dc(SERVO_DUTY_CYCLES[SERVO_IDLE]);
     delay_init(&servo_delay, SERVO_FSM_DELAY_TIMEOUT_MS);
 }
 
