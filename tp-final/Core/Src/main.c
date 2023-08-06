@@ -40,19 +40,12 @@ static void servo_button_pressed()
     svc_servo_change_state();
 }
 
-
-
 /// @brief Callback pressed when the button is pressed.
 static void streaming_button_pressed()
 {
-    led_set(LED3);
+    led_toggle(LED3);
 }
 
-/// @brief Callback pressed when the button is released.
-static void streaming_button_released()
-{
-    led_clear(LED3);
-}
 
 static button_handlers_t servo_button_fsm_handlers =
 {
@@ -63,7 +56,7 @@ static button_handlers_t servo_button_fsm_handlers =
 static button_handlers_t streaming_button_fsm_handlers =
 {
     .pressed_cb = &streaming_button_pressed,
-    .released_cb = &streaming_button_released,
+    .released_cb = NULL,
 };
 
 /**
