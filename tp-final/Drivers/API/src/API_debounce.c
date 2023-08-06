@@ -23,7 +23,9 @@ static button_handlers_t* fsm_handlers[BUTTONS_TOTAL] = { NULL } ;
 
 void debounce_fsm_init(const BoardButtons button, button_handlers_t* const handlers)
 {
-    assert(handlers->pressed_cb && handlers->released_cb);
+    assert(button > 0 && button < BUTTONS_TOTAL);
+    assert(handlers);
+
     fsm_handlers[button] = handlers;
     current_state[button] = BUTTON_UP;
     delay_init(&debounce_delay[button], DEBOUNCE_PERIOD_MS);
@@ -33,36 +35,37 @@ void debounce_fsm_update()
 {
     for(uint8_t button = 0; button < BUTTONS_TOTAL; button++) {
         const ButtonStatus BUTTON_STATUS = button_read(button);
+        DebounceState* const STATE = &current_state[button];
 
-        switch(current_state[button])
+        switch(*STATE)
         {
         case BUTTON_UP:
             if(BUTTON_STATUS == BUTTON_PRESSED) {
-                current_state[button] = BUTTON_FALLING;
+                *STATE = BUTTON_FALLING;
             }
             break;
         case BUTTON_FALLING:
             if(delay_read(&debounce_delay[button])) {
                 if(BUTTON_STATUS == BUTTON_PRESSED) {
                     if(fsm_handlers[button]->pressed_cb) { fsm_handlers[button]->pressed_cb(); }
-                    current_state[button] = BUTTON_DOWN;
+                    *STATE = BUTTON_DOWN;
                 } else {
-                    current_state[button] = BUTTON_UP;
+                    *STATE = BUTTON_UP;
                 }
             }
             break;
         case BUTTON_DOWN:
             if(BUTTON_STATUS == BUTTON_RELEASED) {
-                current_state[button] = BUTTON_RAISING;
+                *STATE = BUTTON_RAISING;
             }
             break;
         case BUTTON_RAISING:
             if(delay_read(&debounce_delay[button])) {
                 if(BUTTON_STATUS == BUTTON_RELEASED) {
                     if(fsm_handlers[button]->released_cb) { fsm_handlers[button]->released_cb(); }
-                    current_state[button] = BUTTON_UP;
+                    *STATE = BUTTON_UP;
                 } else {
-                    current_state[button] = BUTTON_DOWN;
+                    *STATE = BUTTON_DOWN;
                 }
             }
             break;
