@@ -23,7 +23,8 @@
 #include "API_delay.h"
 #include "API_leds.h"
 #include "API_uart.h"
-#include "API_pwm.h"
+
+#include "SVC_servo.h"
 
 #define HEARTBEAT_LED LED1
 #define HEARTBEAT_PERIOD_MS 1000
@@ -35,14 +36,10 @@ void SystemClock_Config(void);
 /// @brief Callback pressed when the button is pressed.
 static void servo_button_pressed()
 {
-    led_set(SERVO_LED);
+    led_toggle(SERVO_LED);
+    svc_servo_change_state();
 }
 
-/// @brief Callback pressed when the button is released.
-static void servo_button_released()
-{
-    led_clear(SERVO_LED);
-}
 
 
 /// @brief Callback pressed when the button is pressed.
@@ -60,7 +57,7 @@ static void streaming_button_released()
 static button_handlers_t servo_button_fsm_handlers =
 {
     .pressed_cb = &servo_button_pressed,
-    .released_cb = &servo_button_released,
+    .released_cb = NULL,
 };
 
 static button_handlers_t streaming_button_fsm_handlers =
@@ -85,8 +82,6 @@ int main(void)
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
 
-  pwm_init();
-
   if(!uart_init()) {
       Error_Handler();
   }
@@ -94,30 +89,16 @@ int main(void)
  debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
  debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
 
- uint8_t index = 0;
+ svc_servo_init();
+
+
   while (1)
   {
       debounce_fsm_update();
+      svc_servo_fsm_update();
       if(delay_read(&heatbeat_delay)) {
           led_toggle(HEARTBEAT_LED);
       }
-
-      switch(index) {
-        case 0:
-            pwm_set_dc(2.5f);
-            break;
-        case 1:
-            pwm_set_dc(6.5f);
-            break;
-        case 2:
-            pwm_set_dc(11.0f);
-            break;
-        default:
-            break;
-        }
-
-       index = (index + 1) % 3;
-       HAL_Delay(2000);
 
   }
 }
