@@ -22,8 +22,8 @@
 #include "API_debounce.h"
 #include "API_delay.h"
 #include "API_leds.h"
-#include "API_uart.h"
 
+#include "SVC_imu.h"
 #include "SVC_servo.h"
 
 #define HEARTBEAT_LED LED1
@@ -44,6 +44,7 @@ static void servo_button_pressed()
 static void streaming_button_pressed()
 {
     led_toggle(LED3);
+    svc_imu_button_pressed();
 }
 
 
@@ -75,20 +76,19 @@ int main(void)
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
 
-  if(!uart_init()) {
-      Error_Handler();
-  }
 
- debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
- debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
+     debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
+     debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
 
- svc_servo_init();
+     svc_servo_init();
+     svc_imu_init();
 
 
   while (1)
   {
       debounce_fsm_update();
       svc_servo_fsm_update();
+      svc_imu_fsm_update();
       if(delay_read(&heatbeat_delay)) {
           led_toggle(HEARTBEAT_LED);
       }
