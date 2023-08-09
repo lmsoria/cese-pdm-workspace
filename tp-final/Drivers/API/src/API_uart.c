@@ -68,24 +68,24 @@ bool_t uart_init()
 
     ret = (HAL_UART_Init(&uart_handler) == HAL_OK);
 
-    if(ret) { // Only print the message if the initialization was OK
-        snprintf((char*)buffer, INITIALIZATION_BUFFER_SIZE,
-                "--------------------\r\n"
-                "%s initialized!\r\n"
-                "Parameters:\r\n"
-                "\t> Baudrate: %ld\r\n"
-                "\t> Data bits: %s\r\n"
-                "\t> Stop bits: %s\r\n"
-                "\t> Parity: %s\r\n"
-                "--------------------\r\n",
-                uart_instance_name(&uart_handler),
-                uart_handler.Init.BaudRate,
-                uart_data_bits_string(&uart_handler),
-                uart_stop_bits_string(&uart_handler),
-                uart_parity_string(&uart_handler));
-
-        uart_send_string(buffer);
-    }
+//    if(ret) { // Only print the message if the initialization was OK
+//        snprintf((char*)buffer, INITIALIZATION_BUFFER_SIZE,
+//                "--------------------\r\n"
+//                "%s initialized!\r\n"
+//                "Parameters:\r\n"
+//                "\t> Baudrate: %ld\r\n"
+//                "\t> Data bits: %s\r\n"
+//                "\t> Stop bits: %s\r\n"
+//                "\t> Parity: %s\r\n"
+//                "--------------------\r\n",
+//                uart_instance_name(&uart_handler),
+//                uart_handler.Init.BaudRate,
+//                uart_data_bits_string(&uart_handler),
+//                uart_stop_bits_string(&uart_handler),
+//                uart_parity_string(&uart_handler));
+//
+//        uart_send_string(buffer);
+//    }
 
     return ret;
 }

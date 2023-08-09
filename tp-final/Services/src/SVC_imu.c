@@ -10,7 +10,7 @@
 
 #include "MPU6500.h"
 
-#define IMU_FSM_SAMPLE_RATE_MS 1000
+#define IMU_FSM_SAMPLE_RATE_MS 100
 
 #define UART_TX_BUFFER_SIZE 256
 
@@ -45,14 +45,6 @@ void svc_imu_init()
     MPU6500_init(&CONFIG);
     current_state = IMU_IDLE;
     delay_init(&imu_delay, IMU_FSM_SAMPLE_RATE_MS);
-
-    uint16_t temperature = 0;
-    float temp_degC = 0.0f;
-    MPU6500_read_temperature(&temperature);
-
-    temp_degC = ((float)temperature/333.87) + 21;
-
-
 }
 
 
@@ -84,11 +76,14 @@ void svc_imu_fsm_update()
     }
 }
 
+
+
 static void svc_imu_tx_data()
 {
-    static uint8_t dummy_value_index = 2;
-    itoa(dummy_values[dummy_value_index], dummy_value_str, 10);
-    snprintf((char*)uart_tx_buffer, UART_TX_BUFFER_SIZE, "[%s] hello!\r\n", dummy_value_str);
-    uart_send_string(uart_tx_buffer);
-    dummy_value_index = (dummy_value_index + 1) % DUMMY_VALUES_SIZE;
+    MPU6500_read_acceleration_raw(&command.measurement.accel_x, &command.measurement.accel_y, &command.measurement.accel_z);
+    MPU6500_read_rotation_raw(&command.measurement.gyro_x, &command.measurement.gyro_y, &command.measurement.gyro_z);
+
+    command.header.magic_word = 0xaa;
+    command.footer.magic_word = 0x55;
+    uart_send_string_size((uint8_t*)(&command), sizeof(command));
 }

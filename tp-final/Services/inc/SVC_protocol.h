@@ -21,7 +21,7 @@ typedef enum
 {
     DEST_BOARD = 0x01,
     DEST_PC = 0x02,
-};
+} DestinationID;
 
 const uint8_t DEST_MASK = 0x0F;
 
@@ -30,9 +30,7 @@ const uint8_t DEST_MASK = 0x0F;
 
 typedef struct
 {
-    uint8_t src_dest;
-    uint8_t command;
-    uint8_t lenght;
+    uint8_t magic_word;
 } ProtocolHeader;
 
 typedef struct
@@ -43,18 +41,19 @@ typedef struct
 
 typedef struct
 {
-    uint32_t accel_x;
-    uint32_t accel_y;
-    uint32_t accel_z;
-    uint32_t gyro_x;
-    uint32_t gyro_y;
-    uint32_t gyro_x;
+    int16_t accel_x;
+    int16_t accel_y;
+    int16_t accel_z;
+    int16_t gyro_x;
+    int16_t gyro_y;
+    int16_t gyro_z;
 } IMUMeasurement;
 
 typedef struct
 {
-    Header header;
+    ProtocolHeader header;
     IMUMeasurement measurement;
+    ProtocolHeader footer;
 } IMUMeasurementReadyCommand;
 
 #pragma pack(pop)

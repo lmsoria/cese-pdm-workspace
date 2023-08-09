@@ -239,4 +239,4 @@ void MPU6500_read_temperature_raw(int16_t* temperature);
 
 void MPU6500_read_acceleration_raw(int16_t* x, int16_t* y, int16_t* z);
 
-void MPU6500_read_roation_raw(int16_t* x, int16_t* y, int16_t* z);
+void MPU6500_read_rotation_raw(int16_t* x, int16_t* y, int16_t* z);

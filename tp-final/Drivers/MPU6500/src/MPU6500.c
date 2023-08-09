@@ -113,7 +113,7 @@ void MPU6500_read_acceleration_raw(int16_t* x, int16_t* y, int16_t* z)
     *z = buffer[4] << 8 | buffer[5];
 }
 
-void MPU6500_read_roation_raw(int16_t* x, int16_t* y, int16_t* z)
+void MPU6500_read_rotation_raw(int16_t* x, int16_t* y, int16_t* z)
 {
     uint8_t buffer[6] = {0};
     i2c_port_read_bytes(MPU_6500_REG_GYRO_XOUT_H, 6, buffer);
