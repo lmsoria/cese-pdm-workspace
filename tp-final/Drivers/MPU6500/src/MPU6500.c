@@ -1,5 +1,6 @@
 #include "MPU6500.h"
 
+#include "delay_port.h"
 #include "i2c_port.h"
 
 
@@ -13,4 +14,10 @@ void MPU6500_init(const MPU6500_config_t* config)
 //	HAL_I2C_Mem_Write(&hi2c1, (MPU_6500_DEFAULT_ADDRESS << 1) | 0x01 , WHO_AM_I, 1, &who_am_i, sizeof(who_am_i), HAL_MAX_DELAY);
 //    i2c_port_write_bit(MPU_6500_REG_GYRO_CONFIG, MPU_6500_REG_GYRO_CONFIG_FCHOICE_B_BIT, 1);
 
+}
+
+void MPU6500_reset()
+{
+    i2c_port_write_bit(MPU_6500_REG_PWR_MGMT_1, MPU_6500_REG_PWR_MGMT_1_DEVICE_RESET_BIT, 1);
+    delay_port_wait(100);
 }
