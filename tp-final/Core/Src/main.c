@@ -25,8 +25,6 @@
 #include "SVC_imu.h"
 #include "SVC_servo.h"
 
-#include "MPU6500.h"
-
 #define HEARTBEAT_LED LED1
 #define HEARTBEAT_PERIOD_MS 1000
 #define SERVO_LED LED2
@@ -82,8 +80,6 @@ int main(void)
 
      svc_servo_init();
      svc_imu_init();
-
-     MPU6500_init(NULL);
 
   while (1)
   {

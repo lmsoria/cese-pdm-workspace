@@ -96,3 +96,10 @@ void MPU6500_set_sample_rate(uint16_t sample_rate)
     uint16_t divider = INTERNAL_SAMPLE_RATE / sample_rate - 1;
     i2c_port_write_byte(MPU_6500_REG_SMPLRT_DIV, (uint8_t)divider);
 }
+
+void MPU6500_read_temperature(uint16_t* temperature)
+{
+    uint8_t buffer[2] = {0, 0};
+    i2c_port_read_bytes(MPU_6500_REG_TEMP_OUT_H, 2, buffer);
+    *temperature = buffer[0] << 8 | buffer[1];
+}

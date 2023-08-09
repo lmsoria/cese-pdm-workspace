@@ -6,6 +6,9 @@
 #include "API_uart.h"
 
 #include "SVC_imu.h"
+#include "SVC_protocol.h"
+
+#include "MPU6500.h"
 
 #define IMU_FSM_SAMPLE_RATE_MS 1000
 
@@ -22,29 +25,42 @@ typedef enum
 static delay_t imu_delay = {};
 static IMUFSMState current_state = IMU_IDLE;
 static bool_t button_pressed = false;
-static uint8_t uart_tx_buffer[UART_TX_BUFFER_SIZE] = {0};
-
-#define DUMMY_VALUES_SIZE 5
-static int32_t dummy_values[DUMMY_VALUES_SIZE] = { -2, -1, 0, 1, 2 };
-static char dummy_value_str[3] = {0};
+static IMUMeasurementReadyCommand command;
 
 static void svc_imu_tx_data();
 
 void svc_imu_init()
 {
+    const MPU6500_config_t CONFIG =
+    {
+        .accel_full_scale = ACCEL_FS_4g,
+        .gyro_full_scale = GYRO_FS_500dps,
+        .accel_dlpf_mode = ACCEL_DLPF_41HZ,
+        .gyro_dlpf_mode = GYRO_DLPF_41HZ,
+        .gyro_fchoice = FCHOICE_0,
+        .sample_rate = 100
+    };
+
     assert(uart_init());
+    MPU6500_init(&CONFIG);
     current_state = IMU_IDLE;
     delay_init(&imu_delay, IMU_FSM_SAMPLE_RATE_MS);
+
+    uint16_t temperature = 0;
+    float temp_degC = 0.0f;
+    MPU6500_read_temperature(&temperature);
+
+    temp_degC = ((float)temperature/333.87) + 21;
+
+
 }
 
 
 void svc_imu_button_pressed() { button_pressed = true; }
+//void svc_imu_button_pressed() { svc_imu_tx_data(); }
 
 void svc_imu_fsm_update()
 {
-
-
-
     switch(current_state)
     {
     case IMU_IDLE:

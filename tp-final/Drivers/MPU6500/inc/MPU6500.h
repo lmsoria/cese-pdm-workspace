@@ -234,3 +234,5 @@ void MPU6500_set_gyro_fchoice(GyroFChoice fchoice);
 GyroFChoice MPU6500_get_gyro_fchoice();
 
 void MPU6500_set_sample_rate(uint16_t sample_rate);
+
+void MPU6500_read_temperature_raw(uint16_t* temperature);
