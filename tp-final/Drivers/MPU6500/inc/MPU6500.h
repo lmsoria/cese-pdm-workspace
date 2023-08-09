@@ -170,17 +170,6 @@ typedef enum {
 } GyroFullScale;
 
 typedef enum {
-    FIFO_SAMPLE_RATE_1000HZ = 0x00,
-    FIFO_SAMPLE_RATE_500HZ = 0x01,
-    FIFO_SAMPLE_RATE_333HZ = 0x02,
-    FIFO_SAMPLE_RATE_250HZ = 0x03,
-    FIFO_SAMPLE_RATE_200HZ = 0x04,
-    FIFO_SAMPLE_RATE_167HZ = 0x05,
-    FIFO_SAMPLE_RATE_143HZ = 0x06,
-    FIFO_SAMPLE_RATE_125HZ = 0x07,	
-} FIFOSampleRate;
-
-typedef enum {
     GYRO_DLPF_250HZ = 0x00,
     GYRO_DLPF_184HZ = 0x01,
     GYRO_DLPF_92HZ = 0x02,
@@ -202,20 +191,26 @@ typedef enum {
 } AccelDLPFMode;
 
 typedef enum {
-    ACCEL_FCHOICE_0 = 0x00,
-    ACCEL_FCHOICE_1 = 0x01,
-    ACCEL_FCHOICE_2 = 0x02,
-    ACCEL_FCHOICE_3 = 0x03,
-} AccelFChoice;
+    FCHOICE_0 = 0x00,
+    FCHOICE_1 = 0x01,
+    FCHOICE_2 = 0x02,
+    FCHOICE_3 = 0x03,
+} GyroFChoice;
+
+typedef enum
+{
+    CLOCK_INTERNAL = 0x00,   ///< Internal 20MHz oscillator
+    CLOCK_PLL = 0x03,        ///< Auto selects the best clock source - PLL if ready, Internal clock otherwise.
+    CLOCK_KEEP_RESET = 0x07, ///< Stops the clock and keeps timing generator in reset.
+} ClockSource;
 
 typedef struct {
     AccelFullScale accel_full_scale;
     GyroFullScale gyro_full_scale;
-    FIFOSampleRate fifo_sample_rate;
-    uint8_t gyro_fchoice;
+    GyroFChoice gyro_fchoice;
     GyroDLPFMode gyro_dlpf_mode;
-    AccelFChoice accel_fchoice;
     AccelDLPFMode accel_dlpf_mode;
+    uint16_t sample_rate;
 } MPU6500_config_t;
 
 
@@ -223,3 +218,19 @@ void MPU6500_init(const MPU6500_config_t* config);
 
 void MPU6500_reset();
 
+void MPU6500_set_clock_source(const ClockSource source);
+
+void MPU6500_set_gyro_full_scale(GyroFullScale gyro_full_scale);
+
+void MPU6500_set_accel_full_scale(AccelFullScale accel_full_scale);
+
+void MPU6500_set_gyro_digital_low_pass_filter(GyroDLPFMode filter_mode);
+GyroDLPFMode MPU6500_get_gyro_digital_low_pass_filter();
+
+void MPU6500_set_accel_digital_low_pass_filter(AccelDLPFMode filter_mode);
+AccelDLPFMode MPU6500_get_accel_digital_low_pass_filter();
+
+void MPU6500_set_gyro_fchoice(GyroFChoice fchoice);
+GyroFChoice MPU6500_get_gyro_fchoice();
+
+void MPU6500_set_sample_rate(uint16_t sample_rate);
