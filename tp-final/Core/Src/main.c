@@ -17,7 +17,6 @@
 #include <main.h>
 #include "usb_device.h"
 #include "gpio.h"
-#include "i2c.h"
 
 #include "API_debounce.h"
 #include "API_delay.h"
@@ -73,7 +72,6 @@ int main(void)
   HAL_Init();
   SystemClock_Config();
   MX_GPIO_Init();
-  MX_I2C1_Init();
   MX_USB_DEVICE_Init();
 
 
