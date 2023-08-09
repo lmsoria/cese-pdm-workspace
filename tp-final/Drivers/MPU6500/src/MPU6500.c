@@ -97,9 +97,27 @@ void MPU6500_set_sample_rate(uint16_t sample_rate)
     i2c_port_write_byte(MPU_6500_REG_SMPLRT_DIV, (uint8_t)divider);
 }
 
-void MPU6500_read_temperature(uint16_t* temperature)
+void MPU6500_read_temperature(int16_t* temperature)
 {
-    uint8_t buffer[2] = {0, 0};
+    uint8_t buffer[2] = {0};
     i2c_port_read_bytes(MPU_6500_REG_TEMP_OUT_H, 2, buffer);
     *temperature = buffer[0] << 8 | buffer[1];
+}
+
+void MPU6500_read_acceleration_raw(int16_t* x, int16_t* y, int16_t* z)
+{
+    uint8_t buffer[6] = {0};
+    i2c_port_read_bytes(MPU_6500_REG_ACCEL_XOUT_H, 6, buffer);
+    *x = buffer[0] << 8 | buffer[1];
+    *y = buffer[2] << 8 | buffer[3];
+    *z = buffer[4] << 8 | buffer[5];
+}
+
+void MPU6500_read_roation_raw(int16_t* x, int16_t* y, int16_t* z)
+{
+    uint8_t buffer[6] = {0};
+    i2c_port_read_bytes(MPU_6500_REG_GYRO_XOUT_H, 6, buffer);
+    *x = buffer[0] << 8 | buffer[1];
+    *y = buffer[2] << 8 | buffer[3];
+    *z = buffer[4] << 8 | buffer[5];
 }
