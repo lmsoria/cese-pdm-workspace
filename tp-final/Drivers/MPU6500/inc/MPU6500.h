@@ -25,10 +25,35 @@
 #define MPU_6500_REG_ZG_OFFSET_H        0x17
 #define MPU_6500_REG_ZG_OFFSET_L        0x18
 #define MPU_6500_REG_SMPLRT_DIV         0x19
+// ----------
 #define MPU_6500_REG_CONFIG             0x1A
+#define MPU_6500_REG_CONFIG_FIFO_MODE_BIT 6
+#define MPU_6500_REG_CONFIG_EXT_SYNC_SET_BIT 5 // [5:3]
+#define MPU_6500_REG_CONFIG_EXT_SYNC_SET_LENGHT 3
+#define MPU_6500_REG_CONFIG_DLPF_CFG_BIT 2 // [2:0]
+#define MPU_6500_REG_CONFIG_DLPF_CFG_LENGHT 3
+// ----------
 #define MPU_6500_REG_GYRO_CONFIG        0x1B
+#define MPU_6500_REG_GYRO_CONFIG_XG_ST_BIT 7
+#define MPU_6500_REG_GYRO_CONFIG_YG_ST_BIT 6
+#define MPU_6500_REG_GYRO_CONFIG_ZG_ST_BIT 5
+#define MPU_6500_REG_GYRO_CONFIG_FS_SEL_BIT 4 // [4:3]
+#define MPU_6500_REG_GYRO_CONFIG_FS_SEL_LENGHT 2
+#define MPU_6500_REG_GYRO_CONFIG_FCHOICE_B_BIT 1 // [1:0]
+#define MPU_6500_REG_GYRO_CONFIG_FCHOICE_B_LENGHT 2
+// ----------
 #define MPU_6500_REG_ACCEL_CONFIG       0x1C
+#define MPU_6500_REG_ACCEL_CONFIG_XA_ST_BIT 7
+#define MPU_6500_REG_ACCEL_CONFIG_YA_ST_BIT 6
+#define MPU_6500_REG_ACCEL_CONFIG_ZA_ST_BIT 5
+#define MPU_6500_REG_ACCEL_CONFIG_FS_SEL_BIT 4 // [4:3]
+#define MPU_6500_REG_ACCEL_CONFIG_FS_SEL_LENGHT 2
+// ----------
 #define MPU_6500_REG_ACCEL_CONFIG_2     0x1D
+#define MPU_6500_REG_ACCEL_CONFIG_2_ACCEL_FC_CHOICE_B_BIT 3
+#define MPU_6500_REG_ACCEL_CONFIG_2_A_DLPF_CFG_BIT 2 // [2:0]
+#define MPU_6500_REG_ACCEL_CONFIG_2_A_DLPF_CFG_LENGHT 3
+// ----------
 #define MPU_6500_REG_LP_ACCEL_ODR       0x1E
 #define MPU_6500_REG_WOM_THR            0x1F
 #define MPU_6500_REG_FIFO_EN            0x23
@@ -100,8 +125,24 @@
 #define MPU_6500_REG_SIGNAL_PATH_RESET  0x68
 #define MPU_6500_REG_ACCEL_INTEL_CTRL   0x69
 #define MPU_6500_REG_USER_CTRL          0x6A
+// ----------
 #define MPU_6500_REG_PWR_MGMT_1         0x6B
+#define MPU_6500_REG_PWR_MGMT_1_DEVICE_RESET_BIT 7
+#define MPU_6500_REG_PWR_MGMT_1_DEVICE_SLEEP_BIT 6
+#define MPU_6500_REG_PWR_MGMT_1_DEVICE_CYCLE_BIT 5
+#define MPU_6500_REG_PWR_MGMT_1_DEVICE_GYRO_STANDBY_BIT 4
+#define MPU_6500_REG_PWR_MGMT_1_DEVICE_TEMP_DIS_BIT 3
+#define MPU_6500_REG_PWR_MGMT_1_DEVICE_CLKSEL_BIT 2 // [2:0]
+#define MPU_6500_REG_PWR_MGMT_1_DEVICE_CLKSEL_LENGHT 3
+// ----------
 #define MPU_6500_REG_PWR_MGMT_2         0x6C
+#define MPU_6500_REG_PWR_MGMT_2_DIS_XA_BIT 5
+#define MPU_6500_REG_PWR_MGMT_2_DIS_YA_BIT 4
+#define MPU_6500_REG_PWR_MGMT_2_DIS_ZA_BIT 3
+#define MPU_6500_REG_PWR_MGMT_2_DIS_XG_BIT 2
+#define MPU_6500_REG_PWR_MGMT_2_DIS_YG_BIT 1
+#define MPU_6500_REG_PWR_MGMT_2_DIS_ZG_BIT 0
+// ----------
 #define MPU_6500_REG_FIFO_COUNT_H       0x72
 #define MPU_6500_REG_FIFO_COUNT_L       0x73
 #define MPU_6500_REG_FIFO_R_W           0x74
@@ -160,15 +201,25 @@ typedef enum {
     ACCEL_DLPF_5Hz = 0x06,
 } AccelDLPFMode;
 
+typedef enum {
+    ACCEL_FCHOICE_0 = 0x00,
+    ACCEL_FCHOICE_1 = 0x01,
+    ACCEL_FCHOICE_2 = 0x02,
+    ACCEL_FCHOICE_3 = 0x03,
+} AccelFChoice;
+
 typedef struct {
     AccelFullScale accel_full_scale;
     GyroFullScale gyro_full_scale;
     FIFOSampleRate fifo_sample_rate;
     uint8_t gyro_fchoice;
     GyroDLPFMode gyro_dlpf_mode;
-    uint8_t accel_fchoice;
+    AccelFChoice accel_fchoice;
     AccelDLPFMode accel_dlpf_mode;
 } MPU6500_config_t;
 
 
-void MPU6500_init(const MPU6500_config_t config);
+void MPU6500_init(const MPU6500_config_t* config);
+
+void MPU6500_reset();
+
