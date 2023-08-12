@@ -31,7 +31,6 @@
 
 void SystemClock_Config(void);
 
-
 /// @brief Callback pressed when the button is pressed.
 static void servo_button_pressed()
 {
@@ -46,13 +45,14 @@ static void streaming_button_pressed()
     svc_imu_button_pressed();
 }
 
-
+/// @brief handlers called whenever the servo button is pressed/released
 static button_handlers_t servo_button_fsm_handlers =
 {
     .pressed_cb = &servo_button_pressed,
     .released_cb = NULL,
 };
 
+/// @brief handlers called whenever the imu streaming button is pressed/released
 static button_handlers_t streaming_button_fsm_handlers =
 {
     .pressed_cb = &streaming_button_pressed,
@@ -69,28 +69,24 @@ int main(void)
 
     delay_init(&heatbeat_delay, HEARTBEAT_PERIOD_MS);
 
-  HAL_Init();
-  SystemClock_Config();
-  MX_GPIO_Init();
-  MX_USB_DEVICE_Init();
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_USB_DEVICE_Init();
 
+    debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
+    debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
 
-     debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
-     debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
+    svc_servo_init();
+    svc_imu_init();
 
-     svc_servo_init();
-     svc_imu_init();
-
-  while (1)
-  {
-      debounce_fsm_update();
-      svc_servo_fsm_update();
-      svc_imu_fsm_update();
-      if(delay_read(&heatbeat_delay)) {
-          led_toggle(HEARTBEAT_LED);
-      }
-
-  }
+    while (1)
+    {
+        debounce_fsm_update();
+        svc_servo_fsm_update();
+        svc_imu_fsm_update();
+        if(delay_read(&heatbeat_delay)) { led_toggle(HEARTBEAT_LED); }
+    }
 }
 
 /**
