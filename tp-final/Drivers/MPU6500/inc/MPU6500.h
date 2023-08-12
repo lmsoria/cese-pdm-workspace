@@ -1,13 +1,8 @@
-/*
- * MPU6500.h
- *
- *  Created on: Jul 12 2023
- *      Author: lsoria
- */
-
 #pragma once
 
 #include <stdint.h>
+
+#include "i2c_port.h"
 
 #define MPU_6500_DEFAULT_ADDRESS (0x68 << 1)
 #define MPU_6500_WHO_AM_I_VALUE 0x70
@@ -213,30 +208,36 @@ typedef struct {
     uint16_t sample_rate;
 } MPU6500_config_t;
 
+typedef enum {
+    MPU6500_ERROR_OK = I2C_PORT_ERROR_TOTAL,
+    MPU6500_ERROR_I2C,
+    MPU6500_ERROR_DEVICE,
+} MPU6500ErrorCode;
 
-void MPU6500_init(const MPU6500_config_t* config);
 
-void MPU6500_reset();
+MPU6500ErrorCode MPU6500_init(const MPU6500_config_t* config);
 
-void MPU6500_set_clock_source(const ClockSource source);
+MPU6500ErrorCode MPU6500_reset();
 
-void MPU6500_set_gyro_full_scale(GyroFullScale gyro_full_scale);
+MPU6500ErrorCode MPU6500_set_clock_source(const ClockSource source);
 
-void MPU6500_set_accel_full_scale(AccelFullScale accel_full_scale);
+MPU6500ErrorCode MPU6500_set_gyro_full_scale(GyroFullScale gyro_full_scale);
 
-void MPU6500_set_gyro_digital_low_pass_filter(GyroDLPFMode filter_mode);
-GyroDLPFMode MPU6500_get_gyro_digital_low_pass_filter();
+MPU6500ErrorCode MPU6500_set_accel_full_scale(AccelFullScale accel_full_scale);
 
-void MPU6500_set_accel_digital_low_pass_filter(AccelDLPFMode filter_mode);
-AccelDLPFMode MPU6500_get_accel_digital_low_pass_filter();
+MPU6500ErrorCode MPU6500_set_gyro_digital_low_pass_filter(GyroDLPFMode filter_mode);
+MPU6500ErrorCode MPU6500_get_gyro_digital_low_pass_filter(GyroDLPFMode* filter_mode);
 
-void MPU6500_set_gyro_fchoice(GyroFChoice fchoice);
-GyroFChoice MPU6500_get_gyro_fchoice();
+MPU6500ErrorCode MPU6500_set_accel_digital_low_pass_filter(AccelDLPFMode filter_mode);
+MPU6500ErrorCode MPU6500_get_accel_digital_low_pass_filter(AccelDLPFMode* filter_mode);
 
-void MPU6500_set_sample_rate(uint16_t sample_rate);
+MPU6500ErrorCode MPU6500_set_gyro_fchoice(GyroFChoice fchoice);
+MPU6500ErrorCode MPU6500_get_gyro_fchoice(GyroFChoice* fchoice);
 
-void MPU6500_read_temperature_raw(int16_t* temperature);
+MPU6500ErrorCode MPU6500_set_sample_rate(uint16_t sample_rate);
 
-void MPU6500_read_acceleration_raw(int16_t* x, int16_t* y, int16_t* z);
+MPU6500ErrorCode MPU6500_read_temperature_raw(int16_t* temperature);
 
-void MPU6500_read_rotation_raw(int16_t* x, int16_t* y, int16_t* z);
+MPU6500ErrorCode MPU6500_read_acceleration_raw(int16_t* x, int16_t* y, int16_t* z);
+
+MPU6500ErrorCode MPU6500_read_rotation_raw(int16_t* x, int16_t* y, int16_t* z);

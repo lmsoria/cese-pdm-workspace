@@ -37,7 +37,7 @@ void svc_imu_init()
     };
 
     assert(uart_init());
-    MPU6500_init(&CONFIG);
+    assert(MPU6500_init(&CONFIG) == MPU6500_ERROR_OK);
     current_state = IMU_IDLE;
     delay_init(&imu_delay, IMU_FSM_SAMPLE_RATE_MS);
 }
