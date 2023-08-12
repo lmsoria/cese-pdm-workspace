@@ -11,6 +11,7 @@ typedef struct
     uint16_t pin;
 } LEDStruct;
 
+/// @brief LUT that contains the Port/Pin information for each output.
 static const LEDStruct AVAILABLE_LEDS[LEDS_TOTAL] =
 {
     [LED1] = {GPIOB, GPIO_PIN_0},

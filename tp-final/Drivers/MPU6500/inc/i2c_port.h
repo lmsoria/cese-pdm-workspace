@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+/// @brief Initialize an I2C device that'll communicate with a single slave
+/// @param slave_address This address will be used by the rest of the API.
 void i2c_port_init(uint8_t slave_address);
 
 /// @brief Read a single bit from a register.

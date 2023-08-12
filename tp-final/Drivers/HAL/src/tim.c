@@ -20,6 +20,7 @@
 
 void MX_TIM2_Init(TIM_HandleTypeDef* htim)
 {
+  assert(htim);
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};

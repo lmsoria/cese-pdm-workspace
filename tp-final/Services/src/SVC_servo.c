@@ -7,12 +7,14 @@
 
 typedef enum
 {
-    SERVO_IDLE = 0,
-    SERVO_POSITION_0,
-    SERVO_POSITION_180,
+    SERVO_IDLE = 0,       ///< Initial/default state. The servo will be at 90 degrees.
+    SERVO_POSITION_0,     ///< The servo will be at 0 degrees
+    SERVO_POSITION_180,   ///< The servo will be at 180 degrees
     SERVO_FSM_STATES_QTY, ///< Always keep this value at the bottom!
 } ServoFSMState;
 
+
+/// @brief LUT containing the PWM duty cycle values for each FSM state.
 static const float SERVO_DUTY_CYCLES[SERVO_FSM_STATES_QTY] =
 {
     [SERVO_IDLE] = 6.5f,
@@ -27,9 +29,9 @@ static bool_t button_pressed = false;
 void svc_servo_init()
 {
     pwm_init();
-    current_state = SERVO_IDLE;
     pwm_set_dc(SERVO_DUTY_CYCLES[SERVO_IDLE]);
     delay_init(&servo_delay, SERVO_FSM_DELAY_TIMEOUT_MS);
+    current_state = SERVO_IDLE;
 }
 
 void svc_servo_fsm_update()
@@ -65,10 +67,8 @@ void svc_servo_fsm_update()
         break;
     }
 
+    /// After determining the state, set the PWM's DC accordingly.
     pwm_set_dc(SERVO_DUTY_CYCLES[current_state]);
 }
 
-void svc_servo_change_state()
-{
-    button_pressed = true;
-}
+void svc_servo_change_state() { button_pressed = true; }

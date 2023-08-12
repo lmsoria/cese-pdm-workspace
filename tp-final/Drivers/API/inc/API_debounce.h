@@ -3,8 +3,10 @@
 #include "API_button.h"
 #include "API_types.h"
 
+/// @brief Callback function used for notifying that a button has been pressed/released
 typedef void (*button_callback_t)(void);
 
+/// @brief Struct containing the handlers for press/release events. They can be NULL if not needed.
 typedef struct
 {
     button_callback_t pressed_cb;
