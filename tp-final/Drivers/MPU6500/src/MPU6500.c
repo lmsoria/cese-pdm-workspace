@@ -13,6 +13,8 @@ MPU6500ErrorCode MPU6500_init(const MPU6500_config_t* config)
         return MPU6500_ERROR_DEVICE;
     }
 
+    // If we read a different value on the WHO_AM_I register, it can be that we are trying to
+    // communicate with a different IMU
     if(who_am_i != MPU_6500_WHO_AM_I_VALUE) {
         return MPU6500_ERROR_DEVICE;
     }
@@ -21,6 +23,7 @@ MPU6500ErrorCode MPU6500_init(const MPU6500_config_t* config)
         return MPU6500_ERROR_DEVICE;
     }
 
+    // Use the PLL, it seems to be more stable that the internal clock.
     if(MPU6500_set_clock_source(CLOCK_PLL) != MPU6500_ERROR_OK) {
         return MPU6500_ERROR_DEVICE;
     }
@@ -40,7 +43,7 @@ MPU6500ErrorCode MPU6500_init(const MPU6500_config_t* config)
         return MPU6500_ERROR_DEVICE;
     }
 
-    if(MPU6500_set_gyro_fchoice(config->gyro_fchoice)  != MPU6500_ERROR_OK) {
+    if(MPU6500_set_gyro_fchoice(config->gyro_fchoice) != MPU6500_ERROR_OK) {
         return MPU6500_ERROR_DEVICE;
     }
 
@@ -56,6 +59,7 @@ MPU6500ErrorCode MPU6500_reset()
     if(i2c_port_write_bit(MPU_6500_REG_PWR_MGMT_1, MPU_6500_REG_PWR_MGMT_1_DEVICE_RESET_BIT, 1) != I2C_PORT_OK) {
         return MPU6500_ERROR_I2C;
     }
+    // From the datasheet (page 10). We should wait max 100 ms until we can start doing R/W operations after a reset.
     delay_port_wait(100);
 
     return MPU6500_ERROR_OK;
