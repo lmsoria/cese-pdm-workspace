@@ -31,38 +31,34 @@
 
 void SystemClock_Config(void);
 
-/// @brief Callback pressed when the button is pressed.
+/// @brief Callback triggered when the button is pressed.
 static void servo_button_pressed()
 {
     led_toggle(SERVO_LED);
     svc_servo_change_state();
 }
 
-/// @brief Callback pressed when the button is pressed.
+/// @brief Callback triggered when the button is released.
 static void streaming_button_pressed()
 {
     led_toggle(LED3);
     svc_imu_button_pressed();
 }
 
-/// @brief handlers called whenever the servo button is pressed/released
+/// @brief Handlers called whenever the servo button is pressed/released
 static button_handlers_t servo_button_fsm_handlers =
 {
     .pressed_cb = &servo_button_pressed,
     .released_cb = NULL,
 };
 
-/// @brief handlers called whenever the imu streaming button is pressed/released
+/// @brief Handlers called whenever the imu streaming button is pressed/released
 static button_handlers_t streaming_button_fsm_handlers =
 {
     .pressed_cb = &streaming_button_pressed,
     .released_cb = NULL,
 };
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
     delay_t heatbeat_delay = {};
