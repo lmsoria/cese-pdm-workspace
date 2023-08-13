@@ -72,8 +72,8 @@ void svc_imu_fsm_update()
 static void svc_imu_tx_data()
 {
     static IMUMeasurementReadyCommand command = {};
-    command.header.magic_word = 0xaa;
-    command.footer.magic_word = 0x55;
+    command.header.magic_word = HEADER_MAGIC_WORD;
+    command.footer.magic_word = FOOTER_MAGIC_WORD;
 
     MPU6500_read_acceleration_raw(&command.measurement.accel_x, &command.measurement.accel_y, &command.measurement.accel_z);
     MPU6500_read_rotation_raw(&command.measurement.gyro_x, &command.measurement.gyro_y, &command.measurement.gyro_z);

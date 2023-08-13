@@ -2,43 +2,26 @@
 
 #include <stdint.h>
 
-typedef enum
-{
-    SERVO_STATE_CHANGED = 0,
-    IMU_STREAMING_CHANGED = 1,
-    IMU_MEASUREMENT_READY,
-} CommandOPCode;
-
-typedef enum
-{
-    SRC_BOARD = 0x10,
-    SRC_PC = 0x20,
-} SourceID;
-
-const uint8_t SRC_MASK = 0xF0;
-
-typedef enum
-{
-    DEST_BOARD = 0x01,
-    DEST_PC = 0x02,
-} DestinationID;
-
-const uint8_t DEST_MASK = 0x0F;
-
+#define HEADER_MAGIC_WORD 0xaa
+#define FOOTER_MAGIC_WORD 0x55
 
 #pragma pack(push, 1)
 
+/// @brief struct used as prefix for any transmitted message
 typedef struct
 {
-    uint8_t magic_word;
+    uint8_t magic_word; ///< Fixed-value character that will be used for recognizing
+                        ///  the beginning of a frame during a transaction.
 } ProtocolHeader;
 
+/// @brief struct used as suffix for any transmitted message
 typedef struct
 {
-    ProtocolHeader header;
-    uint8_t data[];
-} Message;
+    uint8_t magic_word; ///< Fixed-value character that will be used for recognizing
+                        ///  the end of a frame during a transaction.
+} ProtocolFooter;
 
+/// @brief wrapper containing all the IMU measurements.
 typedef struct
 {
     int16_t accel_x;
@@ -49,11 +32,12 @@ typedef struct
     int16_t gyro_z;
 } IMUMeasurement;
 
+/// @brief Message sent through UART
 typedef struct
 {
     ProtocolHeader header;
     IMUMeasurement measurement;
-    ProtocolHeader footer;
+    ProtocolFooter footer;
 } IMUMeasurementReadyCommand;
 
 #pragma pack(pop)
