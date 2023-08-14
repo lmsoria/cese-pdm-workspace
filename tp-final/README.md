@@ -30,7 +30,7 @@ Los objetivos del firmware a desarrollar son:
 
 
 ## Desarrollo del Driver del MPU-6500 (PCSE)
-La implementación del mismo se encuentra en el directorio [`Drivers/MPU6500`](https://github.com/lmsoria/cese-pdm-workspace/tree/tp-final-dev/tp-final/Drivers/MPU6500). La comunicación es a través del protocolo I2C, y es necesario implementar la siguiente API:
+La implementación del mismo se encuentra en el directorio [`Drivers/MPU6500`](https://github.com/lmsoria/cese-pdm-workspace/tree/main/tp-final/Drivers/MPU6500). La comunicación es a través del protocolo I2C, y es necesario implementar la siguiente API:
 ```
 I2CPortError i2c_port_init(uint8_t slave_address);
 
@@ -59,10 +59,46 @@ Después, para utilizar el dispositivo es necesario:
 * Llamar a `MPU6500_init()` pasando la referencia a la configuración.
 * Si se desea obtener las mediciones de aceleración, rotacion y/o temperatura es necesario llamar a `MPU6500_read_acceleration_raw()`, `MPU6500_read_rotation_raw()` y `MPU6500_read_temperature_raw()`, respectivamente.
 
+## Desarrollo de las MEF
+Las máquinas de estado de "alto nivel" se encuentran definidas dentro del directorio [`Services`](https://github.com/lmsoria/cese-pdm-workspace/tree/main/tp-final/Services).
+Se encuentran dos archivos:
+* `SVC_servo`: API que inicializa los drivers necesarios para controlar el servo (PWM) y actualiza su respectiva máquina de estados.
+* `SVC_imu`: API que inicializa los drivers necesarios para leer los datos de la IMU y poder enviarlos por puerto serie, y tambien actualiza su respectiva máquina de estados.
+
+Dado que ambas MEFs requieren detectar si sus respectivos pulsadores fueron apretados, declaran un handler que deberá ser "conectado" en `main.c` para reaccionar ante los eventos de la MEF de los pulsadores.
+
+Esta modularización permite tener un `main.c` compacto, en el cual solo deben inicializarse ambos servicios y actualizar sus MEFs periódicamente:
+```
+int main(void)
+{
+    delay_t heatbeat_delay = {};
+
+    delay_init(&heatbeat_delay, HEARTBEAT_PERIOD_MS);
+
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_USB_DEVICE_Init();
+
+    debounce_fsm_init(SERVO_BUTTON, &servo_button_fsm_handlers);
+    debounce_fsm_init(USER_BUTTON, &streaming_button_fsm_handlers);
+
+    svc_servo_init();
+    svc_imu_init();
+
+    while (1)
+    {
+        debounce_fsm_update();
+        svc_servo_fsm_update();
+        svc_imu_fsm_update();
+        if(delay_read(&heatbeat_delay)) { led_toggle(HEARTBEAT_LED); }
+    }
+}
+```
 ## Codificación de la trama enviada por UART
 El MPU-6500 almacena las mediciones de aceleración y rotación en enteros signados de 16 bits (`int16_t`). Para maximizar el ancho de banda se propone empaquetar las mediciones junto a un `header` y un `footer` y enviar este paquete por puerto serie. La aplicación de PC deberá saber el formato de trama para poder decodificar el mensaje.
 
-Se propone el siguiente empaquetamiento de mensajes (ver [`SVC_protocol.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/tp-final-dev/tp-final/Services/inc/SVC_protocol.h)):
+Se propone el siguiente empaquetamiento de mensajes (ver [`SVC_protocol.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/tp-final/Services/inc/SVC_protocol.h)):
 ```
 #define HEADER_MAGIC_WORD 0xaa
 #define FOOTER_MAGIC_WORD 0x55
@@ -108,7 +144,7 @@ typedef struct
 ## Notas del autor
 * El proyecto fue creado teniendo como base la placa NUCLEO-F413ZH.
 * No se agregó la librería de BSP.
-* Para el manejo de los LEDs de decidió crear una API básica que puede consultarse en [`drivers/API/inc/API_leds.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/practica-05/Drivers/API/inc/API_leds.h)
-* Para el manejo del botón se decidió crear una API básica que puede consultarse en [`drivers/API/inc/API_button.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/practica-05/Drivers/API/inc/API_button.h)
-* Para evitar duplicar la definicion de `bool_t` se optó por crear un header común llamado [`API_types.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/practica-05/Drivers/API/inc/API_types.h) donde se encuentran todas las definiciones de tipos de datos custom.
+* Para el manejo de los LEDs de decidió crear una API básica que puede consultarse en [`drivers/API/inc/API_leds.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/tp-final/Drivers/API/inc/API_leds.h)
+* Para el manejo del botón se decidió crear una API básica que puede consultarse en [`drivers/API/inc/API_button.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/tp-final/Drivers/API/inc/API_button.h)
+* Para evitar duplicar la definicion de `bool_t` se optó por crear un header común llamado [`API_types.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/tp-final/Drivers/API/inc/API_types.h) donde se encuentran todas las definiciones de tipos de datos custom.
 * Se decidió modificar la forma de `debounce_fsm_init()` para que acepte un puntero a una estructura custom que a su vez contiene punteros a funciones: `typedef void (*button_callback_t)(void)`. De esta forma, desde `main.c` se pueden crear los handlers adecuados (y desacoplados de la lógica interna de la FSM) para procesar ambos eventos triggereados por la FSM.
