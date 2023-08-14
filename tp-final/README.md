@@ -148,3 +148,9 @@ typedef struct
 * Para el manejo del botón se decidió crear una API básica que puede consultarse en [`drivers/API/inc/API_button.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/tp-final/Drivers/API/inc/API_button.h)
 * Para evitar duplicar la definicion de `bool_t` se optó por crear un header común llamado [`API_types.h`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/tp-final/Drivers/API/inc/API_types.h) donde se encuentran todas las definiciones de tipos de datos custom.
 * Se decidió modificar la forma de `debounce_fsm_init()` para que acepte un puntero a una estructura custom que a su vez contiene punteros a funciones: `typedef void (*button_callback_t)(void)`. De esta forma, desde `main.c` se pueden crear los handlers adecuados (y desacoplados de la lógica interna de la FSM) para procesar ambos eventos triggereados por la FSM.
+
+## Links de Referencia
+* [DS11581 - STM32F413xH Datasheet](https://www.st.com/resource/en/datasheet/stm32f413zh.pdf)
+* [UM1725 - Description of STM32F4 HAL and low-layer drivers (PDF)](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwio4pKV_ub_AhU2rZUCHVSeBiwQFnoECAsQAQ&url=https%3A%2F%2Fwww.st.com%2Fresource%2Fen%2Fuser_manual%2Fum1725-description-of-stm32f4-hal-and-lowlayer-drivers-stmicroelectronics.pdf&usg=AOvVaw21r2dLlr83WM6rfjwZ3NM-&opi=89978449)
+* [MPU-6500 Datasheet](https://invensense.tdk.com/wp-content/uploads/2020/06/PS-MPU-6500A-01-v1.3.pdf)
+* [MPU-6500 - Register Map and Descriptions](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6500-Register-Map2.pdf)
