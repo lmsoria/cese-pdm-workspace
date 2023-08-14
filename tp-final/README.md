@@ -32,26 +32,26 @@ Los objetivos del firmware a desarrollar son:
 ## Desarrollo del Driver del MPU-6500 (PCSE)
 La implementación del mismo se encuentra en el directorio [`Drivers/MPU6500`](https://github.com/lmsoria/cese-pdm-workspace/tree/main/tp-final/Drivers/MPU6500). La comunicación es a través del protocolo I2C, y es necesario implementar la siguiente API:
 ```
-I2CPortError i2c_port_init(uint8_t slave_address);
+I2CPortError i2c_port_init(const uint8_t slave_address);
 
-I2CPortError i2c_port_read_bit(uint8_t register_address, uint8_t bit_number, uint8_t* data);
+I2CPortError i2c_port_read_bit(const uint8_t register_address, const uint8_t bit_number, uint8_t* const data);
 
-I2CPortError i2c_port_read_bits(uint8_t register_address, uint8_t bit_start, uint8_t length, uint8_t* data);
+I2CPortError i2c_port_read_bits(const uint8_t register_address, const uint8_t bit_start, const uint8_t length, uint8_t* const data);
 
-I2CPortError i2c_port_read_byte(uint8_t register_address, uint8_t* data);
+I2CPortError i2c_port_read_byte(const uint8_t register_address, uint8_t* const data);
 
-I2CPortError i2c_port_read_bytes(uint8_t register_address, uint8_t length, uint8_t* data);
+I2CPortError i2c_port_read_bytes(const uint8_t register_address, const uint8_t length, uint8_t* const data);
 
-I2CPortError i2c_port_write_bit(uint8_t register_address, uint8_t bit_number, uint8_t data);
+I2CPortError i2c_port_write_bit(const uint8_t register_address, const uint8_t bit_number, const uint8_t data);
 
-I2CPortError i2c_port_write_bits(uint8_t register_address, uint8_t bit_start, uint8_t length, uint8_t data);
+I2CPortError i2c_port_write_bits(const uint8_t register_address, const uint8_t bit_start, const uint8_t length, const uint8_t data);
 
-I2CPortError i2c_port_write_byte(uint8_t register_address, uint8_t data);
+I2CPortError i2c_port_write_byte(const uint8_t register_address, uint8_t data);
 
-I2CPortError i2c_port_write_bytes(uint8_t register_address, uint8_t length, uint8_t* data);
+I2CPortError i2c_port_write_bytes(const uint8_t register_address, const uint8_t length, uint8_t* const data);
 ```
 
-En `i2c_port.c` se encuentra una implementación basada en la HAL ofrecida por el fabricante de STM32.
+En [`i2c_port.c`](https://github.com/lmsoria/cese-pdm-workspace/blob/main/tp-final/Drivers/MPU6500/src/i2c_port.c) se encuentra una implementación basada en la HAL ofrecida por el fabricante de STM32.
 
 Después, para utilizar el dispositivo es necesario:
 * Incluir `MPU6500.h`

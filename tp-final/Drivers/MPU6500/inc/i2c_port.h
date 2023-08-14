@@ -13,7 +13,7 @@ typedef enum
 /// @brief Initialize an I2C device that'll communicate with a single slave
 /// @param slave_address This address will be used by the rest of the API.
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_init(uint8_t slave_address);
+I2CPortError i2c_port_init(const uint8_t slave_address);
 
 /// @brief Read a single bit from a register, ie:
 /// ----------------------------------------------------------------
@@ -26,7 +26,7 @@ I2CPortError i2c_port_init(uint8_t slave_address);
 /// @param bit_number
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_read_bit(uint8_t register_address, uint8_t bit_number, uint8_t* data);
+I2CPortError i2c_port_read_bit(const uint8_t register_address, const uint8_t bit_number, uint8_t* const data);
 
 /// @brief Read a range of bits from a single register, ie:
 /// ----------------------------------------------------------------
@@ -40,20 +40,20 @@ I2CPortError i2c_port_read_bit(uint8_t register_address, uint8_t bit_number, uin
 /// @param length
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_read_bits(uint8_t register_address, uint8_t bit_start, uint8_t length, uint8_t* data);
+I2CPortError i2c_port_read_bits(const uint8_t register_address, const uint8_t bit_start, const uint8_t length, uint8_t* const data);
 
 /// @brief Read a single register.
 /// @param register_address
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_read_byte(uint8_t register_address, uint8_t* data);
+I2CPortError i2c_port_read_byte(const uint8_t register_address, uint8_t* const data);
 
 /// @brief Read data from consecutive registers.
 /// @param register_address
 /// @param length
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_read_bytes(uint8_t register_address, uint8_t length, uint8_t* data);
+I2CPortError i2c_port_read_bytes(const uint8_t register_address, const uint8_t length, uint8_t* const data);
 
 /// @brief Write a single bit from a register, ie:
 /// ----------------------------------------------------------------
@@ -66,7 +66,7 @@ I2CPortError i2c_port_read_bytes(uint8_t register_address, uint8_t length, uint8
 /// @param bit_number
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_write_bit(uint8_t register_address, uint8_t bit_number, uint8_t data);
+I2CPortError i2c_port_write_bit(const uint8_t register_address, const uint8_t bit_number, const uint8_t data);
 
 /// @brief Write a range of bits to a register, ie
 /// ----------------------------------------------------------------
@@ -80,17 +80,17 @@ I2CPortError i2c_port_write_bit(uint8_t register_address, uint8_t bit_number, ui
 /// @param length
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_write_bits(uint8_t register_address, uint8_t bit_start, uint8_t length, uint8_t data);
+I2CPortError i2c_port_write_bits(const uint8_t register_address, const uint8_t bit_start, const uint8_t length, const uint8_t data);
 
 /// @brief Write a value to a single register.
 /// @param register_address
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_write_byte(uint8_t register_address, uint8_t data);
+I2CPortError i2c_port_write_byte(const uint8_t register_address, uint8_t data);
 
 /// @brief Write a data sequence to consecutive registers.
 /// @param register_address
 /// @param length
 /// @param data
 /// @return I2C_PORT_OK on success
-I2CPortError i2c_port_write_bytes(uint8_t register_address, uint8_t length, uint8_t* data);
+I2CPortError i2c_port_write_bytes(const uint8_t register_address, const uint8_t length, uint8_t* const data);

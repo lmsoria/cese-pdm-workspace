@@ -21,7 +21,7 @@ bool_t uart_init()
     return ret;
 }
 
-void uart_send_string(uint8_t* p_string)
+void uart_send_string(uint8_t* const p_string)
 {
     uint16_t size = 0;
     uint8_t* p_aux = p_string;
@@ -33,12 +33,12 @@ void uart_send_string(uint8_t* p_string)
     HAL_UART_Transmit(&uart_handler, p_string, size, HAL_MAX_DELAY);
 }
 
-void uart_send_string_size(uint8_t* p_string, uint16_t size)
+void uart_send_string_size(uint8_t* const p_string, const uint16_t size)
 {
     HAL_UART_Transmit(&uart_handler, p_string, size, HAL_MAX_DELAY);
 }
 
-void uart_receive_string_size(uint8_t* p_string, uint16_t size)
+void uart_receive_string_size(uint8_t* const p_string, const uint16_t size)
 {
     HAL_UART_Receive(&uart_handler, p_string, size, HAL_MAX_DELAY);
 }
